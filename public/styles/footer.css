@@ -1,0 +1,159 @@
+/* footer.css */
+
+/* Footer Container */
+.footer {
+  background: #020a21;
+  padding: 3rem 9%;
+  margin-top: 3rem;
+}
+
+/* Box Container Grid */
+.footer .box-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  gap: 2rem;
+  padding-top: 3rem;
+}
+
+/* Individual Box Styling */
+.footer .box-container .box {
+  padding: 0 1rem;
+}
+
+.footer .box-container .box h3 {
+  font-size: 2.2rem;
+  color: #fff;
+  padding: 1rem 0;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.footer .box-container .box p {
+  font-size: 1.5rem;
+  color: #ccc;
+  padding: 1rem 0;
+  line-height: 2;
+  margin: 0;
+}
+
+.footer .box-container .box .link {
+  font-size: 1.5rem;
+  line-height: 2;
+  color: #888;
+  padding: 0.5rem 0;
+  display: block;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer .box-container .box .link:hover {
+  color: #ffaa42;
+  text-decoration: underline;
+}
+
+/* Social Media Share Section */
+.footer .share {
+  padding-top: 3rem;
+  text-align: center;
+}
+
+.footer .share a {
+  font-size: 2rem;
+  width: 5rem;
+  height: 5rem;
+  line-height: 5rem;
+  color: #00e926; /* Using --primary from root */
+  border: 0.1rem solid rgba(8, 96, 8, 0.905); /* Using --green from root */
+  margin: 0.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer .share a:hover {
+  color: #fff;
+  background: rgba(8, 96, 8, 0.905); /* Using --green from root */
+  transform: rotate(360deg);
+}
+
+/* Credit Section */
+.footer .credit {
+  border-top: 0.1rem solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem 0;
+  font-size: 2rem;
+  text-transform: capitalize;
+}
+
+.footer .credit span {
+  color: #ffaa42;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+      padding: 2rem 5%;
+  }
+
+  .footer .box-container {
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      gap: 1.5rem;
+  }
+
+  .footer .box-container .box h3 {
+      font-size: 2rem;
+  }
+
+  .footer .box-container .box p,
+  .footer .box-container .box .link {
+      font-size: 1.4rem;
+  }
+
+  .footer .share a {
+      width: 4rem;
+      height: 4rem;
+      line-height: 4rem;
+      font-size: 1.8rem;
+  }
+
+  .footer .credit {
+      font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 450px) {
+  .footer {
+      padding: 1.5rem 3%;
+  }
+
+  .footer .box-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+  }
+
+  .footer .box-container .box h3 {
+      font-size: 1.8rem;
+  }
+
+  .footer .box-container .box p,
+  .footer .box-container .box .link {
+      font-size: 1.3rem;
+  }
+
+  .footer .share a {
+      width: 3.5rem;
+      height: 3.5rem;
+      line-height: 3.5rem;
+      font-size: 1.6rem;
+      margin: 0.3rem;
+  }
+
+  .footer .credit {
+      font-size: 1.6rem;
+  }
+}

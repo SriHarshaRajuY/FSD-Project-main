@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up Form</title>
+    <link rel="stylesheet" type="text/css" href="../public/styles/register.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <img class="wave" src="../public/images/login-register/wave.png">
+    <div class="container">
+        <div class="img">
+            <img src="../public/images/login-register/bg.png">
+        </div>
+        <div class="login-content">
+            <form action="/register" id="register-form" method="POST">
+                <a href="/" class="home-btn">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <img src="../public/images/login-register/avatar.png">
+                <h2 class="title">Register</h2>
+                <% if (error) { %>
+                    <p style="color: red;"><%= error %></p>
+                <% } %>
+                <div class="input-div role">
+                    <div class="i">
+                        <i class="fas fa-user-tag"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Role</h5>
+                        <select class="input" name="role" required>
+                            <option value=""></option>
+                            <option value="Buyer">Buyer</option>
+                            <option value="Seller">Seller</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Expert">Expert</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Username</h5>
+                        <input type="text" class="input" name="username" required>
+                    </div>
+                </div>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Email</h5>
+                        <input type="email" class="input" name="email" required>
+                    </div>
+                </div>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Mobile Number</h5>
+                        <input type="tel" class="input" name="mobile" required>
+                    </div>
+                </div>
+                <div class="input-div pass">
+                    <div class="i"> 
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Password</h5>
+                        <input type="password" class="input" name="password" id="password" required>
+                    </div>
+                </div>
+                <span class="error-message" id="error-message"></span>
+                <a class="register-link" href="/login">Already have an account? Login</a>
+                <input type="submit" class="btn" value="Register">
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="../public/scripts/register.js"></script>
+</body>
+<footer>
+    <%- include('partials/footer.ejs') %>
+</footer>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Gardenly Delivery Manager' %></title>
+    <link rel="stylesheet" href="../public/styles/deliverymanagerdashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button id="mobile-menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Gardenly</div>
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Gardenly</div>
+                <button id="sidebar-close" class="sidebar-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="<%= currentPage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+                        <a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+                    </li>
+                    <li class="<%= currentPage === 'orders' ? 'active' : '' %>" data-page="orders">
+                        <a href="/orders"><i class="fas fa-shipping-fast"></i> Orders</a>
+                    </li>
+                    <li class="<%= currentPage === 'agents' ? 'active' : '' %>" data-page="agents">
+                        <a href="/agents"><i class="fas fa-users"></i> Delivery Agents</a>
+                    </li>
+                    <li class="<%= currentPage === 'routes' ? 'active' : '' %>" data-page="routes">
+                        <a href="/routes"><i class="fas fa-route"></i> Routes</a>
+                    </li>
+                    <li class="<%= currentPage === 'analytics' ? 'active' : '' %>" data-page="analytics">
+                        <a href="/analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    </li>
+                    <li class="<%= currentPage === 'settings' ? 'active' : '' %>" data-page="settings">
+                        <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <section id="dashboard-page" class="page <%= currentPage === 'dashboard' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Welcome, <%= user.name %>!</h1>
+                </div>
+
+                <!-- Metric Cards -->
+                <div class="metric-cards">
+                    <div class="card metric-card">
+                        <div class="card-content">
+                            <div class="metric-header">
+                                <h3>Pending Deliveries</h3>
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metric-value"><%= metrics.pendingDeliveries %></div>
+                            <div class="metric-change <%= metrics.pendingChange >= 0 ? 'positive' : 'negative' %>">
+                                <%= metrics.pendingChange %>% from yesterday
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="card-content">
+                            <div class="metric-header">
+                                <h3>In Transit</h3>
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="metric-value"><%= metrics.inTransit %></div>
+                            <div class="metric-change <%= metrics.inTransitChange >= 0 ? 'positive' : 'negative' %>">
+                                <%= metrics.inTransitChange %>% from yesterday
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="card-content">
+                            <div class="metric-header">
+                                <h3>Delivered Today</h3>
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="metric-value"><%= metrics.deliveredToday %></div>
+                            <div class="metric-change <%= metrics.deliveredChange >= 0 ? 'positive' : 'negative' %>">
+                                <%= metrics.deliveredChange %>% from yesterday
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="card-content">
+                            <div class="metric-header">
+                                <h3>Active Agents</h3>
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="metric-value"><%= metrics.activeAgents %></div>
+                            <div class="metric-change <%= metrics.agentsChange >= 0 ? 'positive' : '' %>">
+                                <%= metrics.agentsChange === 0 ? 'Same as yesterday' : metrics.agentsChange + '% from yesterday' %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="dashboard-grid">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>Delivery Performance</h2>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="delivery-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>Delivery Status</h2>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Orders</h2>
+                        <a href="/orders" class="view-all">View All</a>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Address</th>
+                                        <th>Delivery Agent</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (recentOrders && recentOrders.length > 0) { %>
+                                        <% recentOrders.forEach(order => { %>
+                                            <tr>
+                                                <td><%= order.id %></td>
+                                                <td><%= order.customer %></td>
+                                                <td><%= order.address %></td>
+                                                <td><%= order.agent || 'Unassigned' %></td>
+                                                <td><span class="status <%= order.statusClass %>"><%= order.status %></span></td>
+                                                <td>
+                                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No recent orders found</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Page -->
+            <section id="orders-page" class="page <%= currentPage === 'orders' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Manage Orders</h1>
+                    <div class="header-actions">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search orders..." class="search-input">
+                            <button class="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="filter-container">
+                            <select id="status-filter" class="filter-select">
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="in-transit">In Transit</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Orders</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table id="orders-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Address</th>
+                                        <th>Order Date</th>
+                                        <th>Delivery Agent</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (allOrders && allOrders.length > 0) { %>
+                                        <% allOrders.forEach(order => { %>
+                                            <tr>
+                                                <td><%= order.id %></td>
+                                                <td><%= order.customer %></td>
+                                                <td><%= order.address %></td>
+                                                <td><%= order.date %></td>
+                                                <td>
+                                                    <% if (order.agent) { %>
+                                                        <%= order.agent %>
+                                                    <% } else { %>
+                                                        <select class="agent-select">
+                                                            <option value="">Assign Agent</option>
+                                                            <% if (agents && agents.length > 0) { %>
+                                                                <% agents.forEach(agent => { %>
+                                                                    <option value="<%= agent.id %>"><%= agent.name %></option>
+                                                                <% }); %>
+                                                            <% } %>
+                                                        </select>
+                                                    <% } %>
+                                                </td>
+                                                <td><span class="status <%= order.statusClass %>"><%= order.status %></span></td>
+                                                <td>
+                                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="7" class="text-center">No orders found</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Agents Page -->
+            <section id="agents-page" class="page <%= currentPage === 'agents' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Delivery Agents</h1>
+                    <div class="header-actions">
+                        <button id="add-agent-btn" class="btn primary-btn">
+                            <i class="fas fa-plus-circle"></i> Add Agent
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Agent Management</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table id="agents-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agent ID</th>
+                                        <th>Name</th>
+                                        <th>Contact</th>
+                                        <th>Area</th>
+                                        <th>Current Load</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (agents && agents.length > 0) { %>
+                                        <% agents.forEach(agent => { %>
+                                            <tr>
+                                                <td><%= agent.id %></td>
+                                                <td><%= agent.name %></td>
+                                                <td><%= agent.email %></td>
+                                                <td><%= agent.area %></td>
+                                                <td><%= agent.load %></td>
+                                                <td><span class="status <%= agent.statusClass %>"><%= agent.status %></span></td>
+                                                <td>
+                                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="7" class="text-center">No agents found</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Routes Page -->
+            <section id="routes-page" class="page <%= currentPage === 'routes' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Delivery Routes</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Route Planning</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="route-map-container">
+                            <div class="route-map" id="map">
+                                <!-- Map placeholder -->
+                                <div class="map-placeholder">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    <p>Interactive map will be displayed here</p>
+                                </div>
+                            </div>
+                            <div class="route-sidebar">
+                                <div class="route-filters">
+                                    <h3>Filter Routes</h3>
+                                    <div class="form-group">
+                                        <label for="agent-filter">Delivery Agent</label>
+                                        <select id="agent-filter" class="filter-select">
+                                            <option value="all">All Agents</option>
+                                            <% if (agents && agents.length > 0) { %>
+                                                <% agents.forEach(agent => { %>
+                                                    <option value="<%= agent.id %>"><%= agent.name %></option>
+                                                <% }); %>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date-filter">Delivery Date</label>
+                                        <input type="date" id="date-filter" class="filter-input" value="<%= currentDate %>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="zone-filter">Zone</label>
+                                        <select id="zone-filter" class="filter-select">
+                                            <option value="all">All Zones</option>
+                                            <% if (zones && zones.length > 0) { %>
+                                                <% zones.forEach(zone => { %>
+                                                    <option value="<%= zone.value %>"><%= zone.label %></option>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <option value="north">North Zone</option>
+                                                <option value="south">South Zone</option>
+                                                <option value="east">East Zone</option>
+                                                <option value="west">West Zone</option>
+                                                <option value="central">Central Zone</option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <button class="btn primary-btn">Apply Filters</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Scheduled Routes</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Route ID</th>
+                                        <th>Agent</th>
+                                        <th>Date</th>
+                                        <th>Zone</th>
+                                        <th>Orders</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (routes && routes.length > 0) { %>
+                                        <% routes.forEach(route => { %>
+                                            <tr>
+                                                <td><%= route.id %></td>
+                                                <td><%= route.agent %></td>
+                                                <td><%= route.date %></td>
+                                                <td><%= route.zone %></td>
+                                                <td><%= route.orders %></td>
+                                                <td><span class="status <%= route.statusClass %>"><%= route.status %></span></td>
+                                                <td>
+                                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="7" class="text-center">No routes found</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Page -->
+            <section id="analytics-page" class="page <%= currentPage === 'analytics' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Delivery Analytics</h1>
+                </div>
+                
+                <div class="metric-cards">
+                    <% if (analyticsMetrics && analyticsMetrics.length > 0) { %>
+                        <% analyticsMetrics.forEach(metric => { %>
+                            <div class="card metric-card">
+                                <div class="card-content">
+                                    <div class="metric-header">
+                                        <h3><%= metric.title %></h3>
+                                        <i class="fas fa-<%= metric.icon %>"></i>
+                                    </div>
+                                    <div class="metric-value"><%= metric.value %></div>
+                                    <div class="metric-change <%= metric.changeType %>"><%= metric.change %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="card metric-card">
+                            <div class="card-content">
+                                <div class="metric-header">
+                                    <h3>Average Delivery Time</h3>
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-value">45 min</div>
+                                <div class="metric-change positive">-12% from last week</div>
+                            </div>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="card-content">
+                                <div class="metric-header">
+                                    <h3>On-Time Delivery Rate</h3>
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="metric-value">94%</div>
+                                <div class="metric-change positive">+3% from last week</div>
+                            </div>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="card-content">
+                                <div class="metric-header">
+                                    <h3>Customer Satisfaction</h3>
+                                    <i class="fas fa-smile"></i>
+                                </div>
+                                <div class="metric-value">4.8/5</div>
+                                <div class="metric-change positive">+0.2 from last week</div>
+                            </div>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="card-content">
+                                <div class="metric-header">
+                                    <h3>Delivery Issues</h3>
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="metric-value">3%</div>
+                                <div class="metric-change positive">-1% from last week</div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>Weekly Delivery Performance</h2>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="weekly-performance-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>Delivery Time by Zone</h2>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="zone-performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Agent Performance</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agent</th>
+                                        <th>Deliveries Completed</th>
+                                        <th>Avg. Delivery Time</th>
+                                        <th>On-Time Rate</th>
+                                        <th>Customer Rating</th>
+                                        <th>Issues</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (agentPerformance && agentPerformance.length > 0) { %>
+                                        <% agentPerformance.forEach(agent => { %>
+                                            <tr>
+                                                <td><%= agent.name %></td>
+                                                <td><%= agent.completed %></td>
+                                                <td><%= agent.avgTime %></td>
+                                                <td><%= agent.onTimeRate %></td>
+                                                <td><%= agent.rating %></td>
+                                                <td><%= agent.issues %></td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No agent performance data available</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settings-page" class="page <%= currentPage === 'settings' ? 'active' : '' %>">
+                <div class="page-header">
+                    <h1>Settings</h1>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Delivery Settings</h2>
+                    </div>
+                    <div class="card-content">
+                        <form id="settings-form">
+                            <% if (settings && settings.length > 0) { %>
+                                <% settings.forEach(setting => { %>
+                                    <div class="form-group">
+                                        <label for="<%= setting.id %>"><%= setting.label %></label>
+                                        <input 
+                                            type="<%= setting.type %>" 
+                                            id="<%= setting.id %>" 
+                                            name="<%= setting.id %>"
+                                            value="<%= setting.value %>" 
+                                            <% if (setting.min !== undefined) { %>min="<%= setting.min %>"<% } %>
+                                            <% if (setting.max !== undefined) { %>max="<%= setting.max %>"<% } %>
+                                            <% if (setting.step !== undefined) { %>step="<%= setting.step %>"<% } %>
+                                        >
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="form-group">
+                                    <label for="delivery-radius">Maximum Delivery Radius (km)</label>
+                                    <input type="number" id="delivery-radius" name="delivery-radius" value="15" min="1" max="50">
+                                </div>
+                                <div class="form-group">
+                                    <label for="delivery-fee">Standard Delivery Fee ($)</label>
+                                    <input type="number" id="delivery-fee" name="delivery-fee" value="5.99" step="0.01" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="free-threshold">Free Delivery Threshold ($)</label>
+                                    <input type="number" id="free-threshold" name="free-threshold" value="50" step="1" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="delivery-slots">Daily Delivery Slots</label>
+                                    <input type="number" id="delivery-slots" name="delivery-slots" value="8" min="1" max="24">
+                                </div>
+                            <% } %>
+                            <div class="form-group">
+                                <label>Theme</label>
+                                <div class="theme-selector">
+                                    <button type="button" id="theme-selector-btn" class="btn">
+                                        <i class="fas fa-moon"></i> Dark Mode
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn primary-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+    <script src="../public/scripts/deliverymanagerdashboard.js"></script>
+</body>
+</html> 

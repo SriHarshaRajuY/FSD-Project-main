@@ -1,0 +1,291 @@
+/* Reset and General Styles */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+    body {
+        background-color: #FDFBEE;
+        font-family: 'Outfit', sans-serif !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        padding-top: 100px; /* Add padding to avoid navbar overlap */
+    }
+
+
+/* Navbar Styles */
+/* Navbar Styles */
+/* Navbar Styles */
+.navbar {
+    width: 100%;
+    background-color: rgb(251, 249, 249); /* Light gray background */
+    padding: 20px 40px; /* Adjust padding */
+    position: fixed; /* Fixed at the top */
+    top: 0;
+    left: 0;
+    color: black;
+    z-index: 1000; /* Ensure it stays above other content */
+    height: 80px;
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between; /* Push logo to the left and links to the right */
+    align-items: center;
+    max-width: 1200px; /* Adjust based on your layout */
+    margin: 0 auto; /* Center the content */
+    height: 100%; /* Take full height of the navbar */
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: rgb(69, 201, 116); /* Green color for the logo */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text (if any) */
+}
+
+.logo i {
+    font-size: 24px; /* Icon size */
+    color: #41B06E; /* Green color for the icon */
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px; /* Increase gap between links */
+    align-items: center;
+}
+
+.nav-links a {
+    color: black; /* Default link color */
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #41B06E; /* Green color on hover */
+}
+
+
+/* Heading */
+#heading, #articles-heading {
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1.3;
+    font-family: 'Outfit', sans-serif !important;
+    text-align: center;
+    color: #141E46;
+    max-width: 1300px;
+    margin: 40px auto 70px auto;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* Categories Grid */
+.categories {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 0;
+}
+
+/* Category Item */
+.sub-categories {
+    position: relative;
+    width: 500px;
+    height: 350px;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Category Image */
+.sub-categories img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+/* Hover Effect */
+.sub-categories:hover img {
+    transform: scale(1.05);
+    filter: brightness(50%);
+}
+
+/* Hover Text */
+.hover-text {
+    position: absolute;
+    top: 50%; /* Move text slightly up */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    color: rgba(238, 231, 231, 0.8);
+}
+
+/* Explore Button */
+.explore-btn {
+    background-color: #41B06E;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    margin-top: 40px; /* Added spacing */
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+    display: inline-block;
+}
+
+/* Hover Text & Button Appear */
+.sub-categories:hover .hover-text {
+    opacity: 1;
+}
+
+.sub-categories:hover .explore-btn {
+    margin-top: 20px; /* Extra spacing on hover */
+}
+
+/* Remove pointer cursor for all elements inside .categories */
+.categories * {
+    cursor: default;
+}
+
+/* Apply pointer cursor only to the buttons */
+.categories .explore-btn {
+    cursor: pointer;
+}
+
+/* Image Caption */
+.image-caption {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1400px) {
+    .categories {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .categories {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+}
+
+/* Blog Articles Section */
+.blog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 60px 30px;
+    background-color: #FDFBEE;
+}
+
+.blog-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    max-width: 1500px;
+    width: 100%;
+}
+
+.blog-item {
+    max-width: 900px;
+    width: 100%;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease-in-out;
+    padding: 30px;
+}
+
+.blog-item:hover {
+    transform: translateY(-8px);
+}
+
+.blog-img img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-bottom: 5px solid #41B06E;
+}
+
+.blog-content {
+    padding: 35px;
+    text-align: left;
+}
+
+.blog-date {
+    font-size: 18px;
+    color: #777;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.blog-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #141E46;
+    margin-bottom: 15px;
+}
+
+.blog-description {
+    font-size: 20px;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.blog-button {
+    display: inline-block;
+    padding: 15px 20px;
+    background-color: #41B06E;
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    border-radius: 7px;
+    transition: background 0.3s;
+}
+
+.blog-button:hover {
+    background-color: #368c59;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .blog-container {
+        grid-template-columns: 1fr;
+    }
+}

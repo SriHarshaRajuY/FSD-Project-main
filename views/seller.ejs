@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardenly - Product Listing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/public/styles/header.css">
+    <link rel="stylesheet" href="/public/styles/seller.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo"><i class="fa-solid fa-leaf"></i> Gardenly</a>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Search products...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+
+        <!-- Dark Mode -->
+        <div class="dark-mode">
+            <i class="ri-moon-line change-theme" id="theme-button"></i>
+            <div class="nav-toggle" id="nav-toggle"></div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="/" class="active">Home</a>
+            <a href="/sellerdashboard">Dashboard</a>
+            <a href="/expert_support">Expert Support</a>
+            <a href="/blog">Blogs</a>
+            <a href="/cart">Cart <span id="cart-count">0</span></a>
+            <a href="/logout" id="logout-btn">Logout</a>
+        </nav>
+        <div id="menu" class="fas fa-bars"></div>
+    </header>
+
+    <div class="seller-container">
+        <form id="seller-product-form">
+            <input type="text" id="seller-product-name" placeholder="Product Name" required>
+            <input type="number" id="seller-product-price" placeholder="Price ($)" step="0.01" required>
+            <input type="file" id="seller-product-image" accept="image/*" required>
+            <input type="number" id="seller-product-quantity" placeholder="Quantity" min="1" required>
+            <button type="submit">Post Product</button>
+        </form>
+    </div>
+    <div class="seller-content-container">
+        <h2>Products for Sale</h2>
+        <div id="seller-product-list" class="seller-product-grid">
+            <% initialProducts.forEach(product => { %>
+                <div class="seller-product">
+                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                    <h3><%= product.name %></h3>
+                    <p>Price: <%= product.price %></p>
+                    <p>Quantity: <%= product.quantity %></p>
+                    <p>Sold: <%= product.sold %></p>
+                    <button class="seller-details-btn" data-product-id="<%= product.id %>">View Details</button>
+                    <button class="seller-edit-btn" data-product-id="<%= product.id %>">Edit</button>
+                    <button class="seller-delete-btn" data-product-id="<%= product.id %>">Delete</button>
+                </div>
+            <% }) %>
+        </div>
+    
+        <h2 class="seller-section-title">🔥 Top Sales</h2>
+        <div id="seller-top-sales" class="seller-product-grid"></div>
+    
+        <h2 class="seller-section-title">📦 Recent Sales</h2>
+        <div id="seller-recent-sales" class="seller-product-grid"></div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="seller-product-modal" class="seller-modal">
+        <div class="seller-modal-content">
+            <span class="seller-close">&times;</span>
+            <img id="seller-modal-img" src="/placeholder.svg" alt="Product Image">
+            <h2 id="seller-modal-title"></h2>
+            <p id="seller-modal-price"></p>
+            <p id="seller-modal-quantity"></p>
+            <p id="seller-modal-sold"></p>
+            <p id="seller-modal-description"></p>
+            <div class="seller-modal-buttons">
+                <button id="seller-add-to-cart" class="seller-cart-btn">Add to Cart</button>
+                <button id="seller-buy-now" class="seller-buy-btn">Sell Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for modal background -->
+    <div id="seller-overlay" class="seller-overlay"></div>
+
+    <!-- JavaScript for Header and Seller Functionality -->
+    <script src="/public/scripts/seller.js"></script>
+    <script>
+        // Dark Mode
+        const themeButton = document.getElementById('theme-button');
+        const darkTheme = 'dark-theme';
+        const iconTheme = 'ri-sun-line';
+
+        const selectedTheme = localStorage.getItem('selected-theme');
+        const selectedIcon = localStorage.getItem('selected-icon');
+
+        if (selectedTheme === 'dark') {
+            document.body.classList.add(darkTheme);
+            themeButton.classList.add(iconTheme);
+        } else {
+            document.body.classList.remove(darkTheme);
+            themeButton.classList.remove(iconTheme);
+        }
+
+        themeButton.addEventListener('click', () => {
+            document.body.classList.toggle(darkTheme);
+            themeButton.classList.toggle(iconTheme);
+
+            const currentTheme = document.body.classList.contains(darkTheme) ? 'dark' : 'light';
+            const currentIcon = themeButton.classList.contains(iconTheme) ? 'ri-sun-line' : 'ri-moon-line';
+
+            localStorage.setItem('selected-theme', currentTheme);
+            localStorage.setItem('selected-icon', currentIcon);
+        });
+
+        /* Mobile Navigation Menu */
+        let menu = document.querySelector('#menu');
+        let navbar = document.querySelector('.navbar');
+
+        menu.onclick = () => {
+            menu.classList.toggle('fa-times');
+            navbar.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 70,
+                            behavior: 'smooth'
+                        });
+                        menu.classList.remove('fa-times');
+                        navbar.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <footer>
+        <%- include('partials/footer.ejs') %>
+    </footer>
+</body>
+</html>

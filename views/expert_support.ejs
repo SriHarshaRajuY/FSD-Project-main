@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Portal</title>
+    <link rel="stylesheet" href="../public/styles/expert_support.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <span class="nursery">Expert</span><span class="live">Support</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" id="homeLink">Home</a>
+            <a href="#" class="active" id="supportLink">Support</a>
+            <a href="#" id="knowledgeBaseLink">Knowledge base</a>
+            <a href="#" id="submitTicketLink">Submit a ticket</a>
+            <% if (user) { %>
+                <a href="/logout">Logout</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <main>
+        <div id="homeSection" class="section active">
+            <h1>Hi, how can we help you?</h1>
+            <div class="search-container">
+                <input type="text" placeholder="Enter the search term here....">
+                <button class="search-btn">🔍</button>
+            </div>
+            <div class="cards">
+                <div class="card" id="browseArticlesCard">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGMxODAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMiAzaDZhNCA0IDAgMCAxIDQgNHYxNGEzIDMgMCAwIDAtMyAzSDJWM3oiPjwvcGF0aD48cGF0aCBkPSJNMjIgM2gtNmE0IDQgMCAwIDAtNCA0djE0YTMgMyAwIDAgMSAzIDhoN1YzeiI+PC9wYXRoPjwvc3ZnPg==" alt="Browse articles">
+                    <h3>Browse articles</h3>
+                    <p>Explore How-To's and learn best practices from our knowledge base</p>
+                </div>
+                <div class="card" id="submitTicketCard">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGMxODAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjEgMTVhMiAyIDAgMCAxLTIgMmgtMWE2IDYgMCAwIDEtNi02di0zYTIgMiAwIDAgMSAyLTJoM2EyIDIgMCAwIDEgMiAydjFhMiAyIDAgMCA1LTIgMmgtMyI+PC9wYXRoPjxwYXRoIGQ9Ik0zIDNoMTh2N0gzeiI+PC9wYXRoPjwvc3ZnPg==" alt="Submit ticket">
+                    <h3>Submit a ticket</h3>
+                    <p>Describe your issue by filling out the support ticket form</p>
+                </div>
+            </div>
+            <div class="popular-articles">
+                <h2>Most popular articles</h2>
+                <div class="articles-grid">
+                    <div class="article-item">
+                        <a href="#" data-article="order-status">Order Status</a>
+                        <p class="modified-date">Modified on Fri, 10 Jun, 2022 at 4:13 PM</p>
+                    </div>
+                    <div class="article-item">
+                        <a href="#" data-article="cancel-refund">Cancel/Replace/Refund/Return</a>
+                        <p class="modified-date">Modified on Fri, 10 Jun, 2022 at 4:31 PM</p>
+                    </div>
+                    <div class="article-item">
+                        <a href="#" data-article="damage-product">Damage/Wrong Product Received</a>
+                        <p class="modified-date">Modified on Fri, 10 Jun, 2022 at 4:33 PM</p>
+                    </div>
+                    <div class="article-item">
+                        <a href="#" data-article="cashback">Cashback Voucher/Cashback Coupon</a>
+                        <p class="modified-date">Modified on Fri, 10 Jun, 2022 at 4:38 PM</p>
+                    </div>
+                </div>
+                <a href="#" class="view-all" data-list="quick-help">View all articles</a>
+            </div>
+        </div>
+
+        <div id="knowledgeBaseSection" class="section">
+            <h1>Knowledge base</h1>
+            <div class="kb-container">
+                <div class="kb-category">
+                    <h2>General (1)</h2>
+                    <div class="kb-subcategory">
+                        <h3>Quick Help (9)</h3>
+                        <ul>
+                            <li><a href="#" data-article="order-status">Order Status</a></li>
+                            <li><a href="#" data-article="cancel-refund">Cancel/Replace/Refund/Return</a></li>
+                            <li><a href="#" data-article="damage-product">Damage/Wrong Product Received</a></li>
+                        </ul>
+                        <a href="#" class="view-all" data-list="quick-help">View all 9</a>
+                    </div>
+                </div>
+                <div class="kb-category">
+                    <h2>Payment Gateway (1)</h2>
+                    <div class="kb-subcategory">
+                        <h3>Simpl Payment Gateway (4)</h3>
+                        <ul>
+                            <li><a href="#" data-article="what-is-simpl">What is Simpl</a></li>
+                            <li><a href="#" data-article="buy-now-pay-later">What is "Buy Now Pay Later" Payment Mode</a></li>
+                            <li><a href="#" data-article="pay-later-cod">Is Pay Later and COD are same?</a></li>
+                        </ul>
+                        <a href="#" class="view-all" data-list="payment-gateway">View all 4</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="articleSection" class="section">
+            <div class="breadcrumb"></div>
+            <div class="article-content"></div>
+            <div class="article-feedback">
+                <p>Was this article helpful?</p>
+                <button class="feedback-btn" data-value="no">No</button>
+                <button class="feedback-btn" data-value="yes">Yes</button>
+            </div>
+        </div>
+
+        <div id="articleListSection" class="section">
+            <div class="breadcrumb"></div>
+            <div class="article-list"></div>
+        </div>
+
+        <div id="ticketSection" class="section">
+            <h1>Submit a ticket</h1>
+            <form id="ticketForm" class="ticket-form">
+                <div class="form-group">
+                    <label for="requester">Requester *</label>
+                    <input type="text" id="requester" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject *</label>
+                    <input type="text" id="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" required>
+                        <option value="">Choose...</option>
+                        <option value="general">General</option>
+                        <option value="technical">Technical</option>
+                        <option value="billing">Billing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="attachment">Attachment</label>
+                    <input type="file" id="attachment">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script src="../public/scripts/expert_support.js"></script>
+</body>
+</html>

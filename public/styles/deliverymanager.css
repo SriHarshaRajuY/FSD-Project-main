@@ -1,0 +1,107 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4CAF50;
+    padding: 15px 20px;
+    color: white;
+}
+
+.header .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
+.header .logo i {
+    margin-right: 10px;
+}
+
+.navbar {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    transition: background 0.3s;
+}
+
+.navbar a:hover {
+    background: #388E3C;
+    border-radius: 5px;
+}
+
+/* Section Styles */
+.section {
+    background-color: white;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Delivery List Styles */
+.delivery-list {
+    margin-top: 10px;
+}
+
+.delivery-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delivery-item:last-child {
+    border-bottom: none;
+}
+
+.delivery-item .delivery-info {
+    flex: 1;
+}
+
+.delivery-item .delivery-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.delivery-item button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.delivery-item button.update-status {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.delivery-item button.view-details {
+    background-color: #2196F3;
+    color: white;
+}

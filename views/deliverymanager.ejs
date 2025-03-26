@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Manager Page</title>
+    <link rel="stylesheet" href="/public/styles/deliverymanager.css">
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo"><i class="fa-solid fa-leaf"></i> Gardenly</a>
+        <nav class="navbar">
+            <a href="/">Home</a>
+            <a href="/deliverymanagerdashboard">Dashboard</a>
+            <a href="/">Logout</a>
+        </nav>
+    </header>
+    <div class="container">
+        <header>
+            <h1>Delivery Management</h1>
+            
+        </header>
+
+        <!-- Pending Deliveries Section -->
+        <section id="pending-deliveries" class="section">
+            <h2>Pending Deliveries</h2>
+            <div class="delivery-list" id="pending-delivery-list">
+                <!-- Pending deliveries will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- In Progress Deliveries Section -->
+        <section id="in-progress-deliveries" class="section">
+            <h2>In Progress Deliveries</h2>
+            <div class="delivery-list" id="in-progress-delivery-list">
+                <!-- In-progress deliveries will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- Completed Deliveries Section -->
+        <section id="completed-deliveries" class="section">
+            <h2>Completed Deliveries</h2>
+            <div class="delivery-list" id="completed-delivery-list">
+                <!-- Completed deliveries will be dynamically inserted here -->
+            </div>
+        </section>
+    </div>
+
+    <script src="/public/scripts/deliverymanager.js"></script>
+</body>
+</html>

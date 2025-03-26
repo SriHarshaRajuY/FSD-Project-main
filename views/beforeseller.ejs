@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardenly - Product Listing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../public/styles/beforeseller.css">
+</head>
+<body>
+    <!-- Include Header -->
+    <%- include('partials/header', { user: user, isHomePage: false }) %>
+
+    <div class="seller-container">
+        <form id="seller-product-form">
+            <input type="text" id="seller-product-name" placeholder="Product Name" required>
+            <input type="number" id="seller-product-price" placeholder="Price ($)" required>
+            <input type="file" id="seller-product-image" accept="image/*" required>
+            <input type="number" id="seller-product-quantity" placeholder="Quantity" min="1" required>
+            <button type="submit">Post Product</button>
+        </form>
+    </div>
+
+    <div class="seller-content-container">
+        <h2>Products for Sale</h2>
+        <div id="seller-product-list" class="seller-product-grid">
+            <!-- Products will be dynamically added here -->
+        </div>
+
+        <h2 class="seller-section-title">🔥 Top Sales</h2>
+        <div id="seller-top-sales" class="seller-product-grid">
+            <!-- Top sales products will be dynamically added here -->
+        </div>
+
+        <h2 class="seller-section-title">📦 Recent Sales</h2>
+        <div id="seller-recent-sales" class="seller-product-grid">
+            <!-- Recent sales products will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="seller-product-modal" class="seller-modal">
+        <div class="seller-modal-content">
+            <span class="seller-close">×</span>
+            <img id="seller-modal-img" src="/placeholder.svg" alt="Product Image">
+            <h2 id="seller-modal-title"></h2>
+            <p id="seller-modal-price"></p>
+            <p id="seller-modal-quantity"></p>
+            <p id="seller-modal-sold"></p>
+            <p id="seller-modal-description"></p>
+            <!-- Removed the buttons -->
+        </div>
+    </div>
+
+    <!-- Overlay for modal background -->
+    <div id="seller-overlay" class="seller-overlay"></div>
+
+    <!-- JavaScript for Seller Functionality -->
+    <script src="../public/scripts/beforeseller.js"></script>
+
+    <footer>
+        <%- include('partials/footer.ejs') %>
+    </footer>
+</body>
+</html>

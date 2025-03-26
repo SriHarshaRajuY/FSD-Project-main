@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Products Cart</title>
+<link rel="stylesheet" href="../public/styles/cart.css">
+</head>
+<body>
+    <div class="cart-container">
+        <h1>Shopping Cart</h1>
+        <div id="cart-items"></div>
+        <div class="total-section">
+            <h3>Total: ₹<span id="cart-total">0</span></h3>
+        </div>
+    </div>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <img id="modal-image">
+            <p id="modal-description"></p>
+            <p>Price: ₹<span id="modal-price"></span></p>
+            <p>Rating: <span id="modal-rating"></span> ★</p>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+   <script src="../public/scripts/cart.js"></script>
+</body>
+</html>

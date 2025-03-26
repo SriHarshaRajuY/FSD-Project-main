@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardenly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link href="../public/styles/homestyle.css" rel="stylesheet">
+    <link href="../public/styles/searchhandler.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('partials/header', { user: user }) %>
+
+    <!-- Home -->
+    <section class="home" id="home">
+        <div class="swiper home-slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="box" style="background:url(../public/images/homeslider/h1.png);">
+                        <div class="content">
+                            <a href="#available" class="btn">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="box" style="background:url(../public/images/homeslider/h2.png);">
+                        <div class="content">
+                            <a href="#available" class="btn">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="box" style="background:url(../public/images/homeslider/h3.png);">
+                        <div class="content">
+                            <a href="#available" class="btn">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <!-- Category Badges -->
+    <section class="category-badges">
+        <div class="category-container">
+            <!-- Plants -->
+            <a href="/plants" class="category-item">
+                <img src="../public/images/category-badges/plants-badge.png" alt="Plants">
+                <p>PLANTS</p>
+            </a>
+            <!-- Seeds -->
+            <a href="/seeds" class="category-item">
+                <img src="../public/images/category-badges/seeds-badge.png" alt="Seeds">
+                <p>SEEDS</p>
+            </a>
+            <!-- Pots -->
+            <a href="/pots" class="category-item">
+                <img src="../public/images/category-badges/pots-badge.png" alt="Pots">
+                <p>POTS</p>
+            </a>
+            <!-- Fertilizers -->
+            <a href="/fertilizers" class="category-item">
+                <img src="../public/images/category-badges/fertilizers-badge.png" alt="Fertilizers">
+                <p>FERTILIZERS</p>
+            </a>
+            <!-- Pebbles -->
+            <a href="/pebbles" class="category-item">
+                <img src="../public/images/category-badges/pebbles-badge.png" alt="Pebbles">
+                <p>PEBBLES</p>
+            </a>
+            <!-- Accessories -->
+            <a href="/tools" class="category-item">
+                <img src="../public/images/category-badges/accessories-badge.png" alt="Accessories">
+                <p>ACCESSORIES</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Product -->
+    <section class="product" id="available">
+        <h1 class="heading">New Products</h1>
+        <div class="box-container">
+            <!-- Products will be dynamically inserted here by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Our Best Products -->
+    <section class="sell" id="best">
+        <h1 class="heading">Our Best Product</h1>
+        <div class="line"></div>
+        <div class="box-container">
+            <!-- Best products will be dynamically inserted here by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Product Detail Popup -->
+    <div class="product-detail" id="product-detail">
+        <div class="detail-container">
+            <button class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                Back to Products
+            </button>
+            <div class="detail-content"></div>
+        </div>
+    </div>
+
+    <!-- jQuery & Swiper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        // Product data
+        window.newProducts = [
+            {
+                id: 1,
+                name: "Money Plant Golden",
+                image: "./public/images/new-products/p6.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "A beautiful low-maintenance plant that brings prosperity.",
+                inStock: true
+            },
+            {
+                id: 2,
+                name: "Growing round Plastic pot",
+                image: "./public/images/new-products/p7.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Durable plastic pot perfect for small plants.",
+                inStock: true
+            },
+            {
+                id: 3,
+                name: "Spinach Seeds",
+                image: "./public/images/new-products/p5.jpg",
+                rating: 4.5,
+                price: 5,
+                originalPrice: 7.60,
+                description: "High-quality seeds for growing fresh spinach.",
+                inStock: true
+            },
+            {
+                id: 4,
+                name: "Pruning Secateur",
+                image: "./public/images/new-products/p1.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Sharp tool for precise plant pruning.",
+                inStock: false
+            },
+            {
+                id: 5,
+                name: "Onex Pebbles - 1Kg",
+                image: "./public/images/new-products/p3.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Decorative pebbles for garden aesthetics.",
+                inStock: true
+            },
+            {
+                id: 6,
+                name: "Parijat Tree",
+                image: "./public/images/new-products/p4.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Fragrant flowering tree for your garden.",
+                inStock: true
+            },
+            {
+                id: 7,
+                name: "Fungo Gaurd - 500ml",
+                image: "./public/images/new-products/p2.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Fungicide to protect plants from fungal diseases.",
+                inStock: true
+            },
+            {
+                id: 8,
+                name: "Coco Husk Block - 5kg",
+                image: "./public/images/new-products/p8.jpg",
+                rating: 4.5,
+                price: 10,
+                originalPrice: 14.50,
+                description: "Natural growing medium for healthy plants.",
+                inStock: true
+            }
+        ];
+
+        window.bestProducts = [
+            {
+                id: 1,
+                name: "Bonsai",
+                image: "public/images/best-products/s1.jpg"
+            },
+            {
+                id: 2,
+                name: "Indoor",
+                image: "public/images/best-products/s2.jpg"
+            },
+            {
+                id: 3,
+                name: "Areca Palm",
+                image: "public/images/best-products/s3.jpg"
+            },
+            {
+                id: 4,
+                name: "Seeds",
+                image: "public/images/best-products/s4.jpg"
+            }
+        ];
+    </script>
+    <script src="../public/scripts/homescript.js" defer></script>
+    <script src="../public/scripts/searchhandler.js" defer></script>
+</body>
+<footer>
+    <%- include('partials/footer.ejs') %>
+</footer>
+</html>

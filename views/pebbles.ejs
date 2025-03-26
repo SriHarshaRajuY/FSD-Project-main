@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pebbles</title>
+    <link rel="stylesheet" href="../public/styles/pebbles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Splash Sale Banner -->
+        <div class="splash-sale-banner">
+            <h2>15% Off Sitewide</h2>
+            <p>Min. purchase of ₹1499</p>
+            <p>Use Code: <strong>SAVE15</strong></p>
+        </div>
+    
+        <div class="header">
+            <h1>Pebbles</h1>
+            <div class="header-buttons">
+                <button class="home-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    HOME
+                </button>
+                <button class="filter-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    FILTER
+                </button>
+                <button class="sort-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/></svg>
+                    SORT BY
+                </button>
+                <div class="sort-menu">
+                    <ul>
+                        <li>Price, low to high</li>
+                        <li>Price, high to low</li>
+                        <li>Rating, high to low</li>
+                        <li>Name, A to Z</li>
+                        <li>Name, Z to A</li>
+                    </ul>
+                </div>
+                <div class="filter-menu">
+                    <h3>Filters</h3>
+                    <div class="filter-section">
+                        <h4>Type</h4>
+                        <label><input type="checkbox" class="filter-type" value="Polished"> Polished</label>
+                        <label><input type="checkbox" class="filter-type" value="Natural"> Natural</label>
+                        <label><input type="checkbox" class="filter-type" value="Colored"> Colored</label>
+                    </div>
+                    <div class="filter-section">
+                        <h4>Price Range</h4>
+                        <label><input type="checkbox" class="filter-price" value="0-300"> ₹0 - ₹300</label>
+                        <label><input type="checkbox" class="filter-price" value="300-450"> ₹300 - ₹450</label>
+                        <label><input type="checkbox" class="filter-price" value="450+"> ₹450+</label>
+                    </div>
+                    <div class="filter-section">
+                        <h4>Availability</h4>
+                        <label><input type="checkbox" class="filter-availability" value="inStock"> In Stock</label>
+                        <label><input type="checkbox" class="filter-availability" value="outOfStock"> Out of Stock</label>
+                    </div>
+                    <div class="filter-section">
+                        <h4>Rating</h4>
+                        <label><input type="checkbox" class="filter-rating" value="5"> 5 Stars</label>
+                        <label><input type="checkbox" class="filter-rating" value="4"> 4+ Stars</label>
+                    </div>
+                    <button class="apply-filters">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+        <div class="products" id="products-grid"></div>
+    </div>
+    
+    <div class="product-detail" id="product-detail">
+        <div class="detail-container">
+            <button class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                Back to Products
+            </button>
+            <div class="detail-content"></div>
+        </div>
+    </div>
+    <script src="../public/scripts/pebbles.js"></script>   
+</body>
+</html>

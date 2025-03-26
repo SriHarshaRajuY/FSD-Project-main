@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Support Dashboard</title>
+    <link rel="stylesheet" href="../public/styles/expert_dashboard.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <span class="nursery">Expert</span><span class="live">Support</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active" id="dashboardLink">Dashboard</a>
+            <a href="#" id="ticketsLink">Tickets</a>
+            <a href="/expert_support">Knowledge Base</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <main>
+        <div id="dashboardSection" class="section active">
+            <h1>Welcome, <%= user.username %>!</h1>
+            <div class="stats-container">
+                <div class="card">
+                    <h3>Active Tickets</h3>
+                    <p id="activeTickets"><%= tickets.filter(t => t.status === 'Open').length %></p>
+                </div>
+                <div class="card">
+                    <h3>Resolved Today</h3>
+                    <p id="resolvedToday">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Assigned</h3>
+                    <p><%= tickets.length %></p>
+                </div>
+            </div>
+            <div class="recent-tickets">
+                <h2>Recent Tickets</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Requester</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTicketsBody">
+                        <% tickets.slice(0, 5).forEach(ticket => { %>
+                            <tr>
+                                <td><%= ticket.id %></td>
+                                <td><%= ticket.requester %></td>
+                                <td><%= ticket.subject %></td>
+                                <td><%= ticket.status %></td>
+                                <td><a href="#" data-ticket="<%= ticket.id %>">View</a></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ticketsSection" class="section">
+            <h1>All Tickets</h1>
+            <div class="ticket-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Requester</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketTableBody">
+                        <% tickets.forEach(ticket => { %>
+                            <tr>
+                                <td><%= ticket.id %></td>
+                                <td><%= ticket.requester %></td>
+                                <td><%= ticket.subject %></td>
+                                <td><%= ticket.type %></td>
+                                <td><%= ticket.status %></td>
+                                <td><a href="#" data-ticket="<%= ticket.id %>">View</a></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <script src="../public/scripts/expert_dashboard.js"></script>
+</body>
+</html>
