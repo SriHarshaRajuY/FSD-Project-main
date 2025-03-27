@@ -8,7 +8,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "A beautiful low-maintenance plant that brings prosperity.",
-        inStock: true
+        inStock: true,
+        available: 25
     },
     {
         id: 2,
@@ -18,7 +19,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Durable plastic pot perfect for small plants.",
-        inStock: true
+        inStock: true,
+        available: 50
     },
     {
         id: 3,
@@ -28,7 +30,8 @@ window.newProducts = [
         price: 5,
         originalPrice: 7.60,
         description: "High-quality seeds for growing fresh spinach.",
-        inStock: true
+        inStock: true,
+        available: 100
     },
     {
         id: 4,
@@ -38,7 +41,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Sharp tool for precise plant pruning.",
-        inStock: false
+        inStock: false,
+        available: 0
     },
     {
         id: 5,
@@ -48,7 +52,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Decorative pebbles for garden aesthetics.",
-        inStock: true
+        inStock: true,
+        available: 30
     },
     {
         id: 6,
@@ -58,7 +63,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Fragrant flowering tree for your garden.",
-        inStock: true
+        inStock: true,
+        available: 15
     },
     {
         id: 7,
@@ -68,7 +74,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Fungicide to protect plants from fungal diseases.",
-        inStock: true
+        inStock: true,
+        available: 40
     },
     {
         id: 8,
@@ -78,7 +85,8 @@ window.newProducts = [
         price: 10,
         originalPrice: 14.50,
         description: "Natural growing medium for healthy plants.",
-        inStock: true
+        inStock: true,
+        available: 20
     }
 ];
 
@@ -183,8 +191,7 @@ async function isLoggedIn() {
     }
 }
 
-// Render new products (no longer needed as products are server-rendered)
-// This function is kept for potential dynamic updates
+// Render new products
 function renderNewProducts() {
     const newProductsContainer = document.querySelector('.product .box-container');
     if (newProductsContainer && window.newProducts) {
@@ -202,10 +209,13 @@ function renderNewProducts() {
                 </div>
                 <div class="quantity">
                     <span>Quantity</span>
-                    <input type="number" min="1" max="50" value="1">
+                    <input type="number" min="1" max="${product.available}" value="1">
                 </div>
                 <div class="price">
                     $${product.price.toFixed(2)} <span>$${product.originalPrice ? product.originalPrice.toFixed(2) : (product.price * 1.45).toFixed(2)}</span>
+                </div>
+                <div class="available">
+                    <span>Available: ${product.available}</span>
                 </div>
                 <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
             </div>
@@ -213,8 +223,7 @@ function renderNewProducts() {
     }
 }
 
-// Render best products (no longer needed as products are server-rendered)
-// This function is kept for potential dynamic updates
+// Render best products
 function renderBestProducts() {
     const bestProductsContainer = document.querySelector('.sell .box-container');
     if (bestProductsContainer && window.bestProducts) {
@@ -260,6 +269,9 @@ function showProductDetail(productId) {
             </div>
             <p class="price">$${product.price.toFixed(2)}</p>
             <p class="description">${product.description || 'No description available.'}</p>
+            ${product.available !== undefined ? `
+                <p class="available">Available: ${product.available}</p>
+            ` : ''}
             <button class="add-to-cart-btn" ${!product.inStock ? 'disabled' : ''}>
                 ${product.inStock ? 'Add to Cart' : 'Sold Out'}
             </button>
@@ -287,11 +299,14 @@ function showProductDetail(productId) {
             quantityValue.textContent = quantity;
             priceElement.textContent = `$${(product.price * quantity).toFixed(2)}`;
             decrementBtn.disabled = quantity <= 1;
+            incrementBtn.disabled = quantity >= product.available;
         };
 
         incrementBtn.addEventListener('click', () => {
-            quantity++;
-            updateQuantityAndPrice();
+            if (quantity < product.available) {
+                quantity++;
+                updateQuantityAndPrice();
+            }
         });
 
         decrementBtn.addEventListener('click', () => {
@@ -314,11 +329,9 @@ function handleProductAction(action, productId) {
     switch (action) {
         case 'favorite':
             console.log(`Added product ${productId} to favorites`);
-            // Add actual favorite functionality here
             break;
         case 'share':
             console.log(`Sharing product ${productId}`);
-            // Add actual share functionality here
             break;
         case 'view':
             console.log(`Viewing product ${productId} details`);
@@ -352,6 +365,11 @@ async function handleAddToCart(productId, quantity) {
         return;
     }
 
+    if (quantity > product.available) {
+        alert(`Only ${product.available} items available in stock!`);
+        return;
+    }
+
     const cartItem = {
         id: product.id.toString(),
         name: product.name,
@@ -360,6 +378,7 @@ async function handleAddToCart(productId, quantity) {
         rating: product.rating || 4.5,
         description: product.description,
         inStock: product.inStock,
+        available: product.available,
         quantity: quantity
     };
 
@@ -367,6 +386,10 @@ async function handleAddToCart(productId, quantity) {
     const existingProduct = cart.find(p => p.id === cartItem.id);
     
     if (existingProduct) {
+        if (existingProduct.quantity + quantity > product.available) {
+            alert(`Only ${product.available - existingProduct.quantity} more items can be added!`);
+            return;
+        }
         existingProduct.quantity += quantity;
     } else {
         cart.push(cartItem);
@@ -390,7 +413,6 @@ async function handleAddToCart(productId, quantity) {
 
 // Initialize products and add event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Products are already rendered server-side, but we can update if needed
     renderNewProducts();
     renderBestProducts();
 
@@ -398,9 +420,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const quantityInput = box.querySelector('input[type="number"]');
         if (quantityInput) {
             quantityInput.addEventListener('change', (e) => {
+                const max = parseInt(e.target.max);
                 const value = parseInt(e.target.value);
                 if (value < 1) e.target.value = '1';
-                if (value > 50) e.target.value = '50';
+                if (value > max) e.target.value = max.toString();
             });
         }
 
@@ -445,7 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close product detail when clicking outside
     productDetail?.addEventListener('click', (e) => {
         if (e.target === productDetail) {
             productDetail.classList.remove('active');
