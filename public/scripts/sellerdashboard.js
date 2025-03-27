@@ -299,3 +299,4 @@ function loadProducts() {
       })
       .catch(error => console.error("Error:", error));
 }
+
