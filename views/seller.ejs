@@ -41,6 +41,7 @@
         <div id="menu" class="fas fa-bars"></div>
     </header>
 
+    <!-- Product Form -->
     <div class="seller-container">
         <form id="seller-product-form">
             <input type="text" id="seller-product-name" placeholder="Product Name" required>
@@ -50,6 +51,8 @@
             <button type="submit">Post Product</button>
         </form>
     </div>
+
+    <!-- Product Listings -->
     <div class="seller-content-container">
         <h2>Products for Sale</h2>
         <div id="seller-product-list" class="seller-product-grid">
@@ -77,7 +80,7 @@
     <!-- Product Details Modal -->
     <div id="seller-product-modal" class="seller-modal">
         <div class="seller-modal-content">
-            <span class="seller-close">&times;</span>
+            <span class="seller-close">×</span>
             <img id="seller-modal-img" src="/placeholder.svg" alt="Product Image">
             <h2 id="seller-modal-title"></h2>
             <p id="seller-modal-price"></p>
@@ -94,7 +97,7 @@
     <!-- Overlay for modal background -->
     <div id="seller-overlay" class="seller-overlay"></div>
 
-    <!-- JavaScript for Header and Seller Functionality -->
+    <!-- JavaScript -->
     <script src="/public/scripts/seller.js"></script>
     <script>
         // Dark Mode
@@ -124,14 +127,14 @@
             localStorage.setItem('selected-icon', currentIcon);
         });
 
-        /* Mobile Navigation Menu */
+        // Mobile Navigation Menu
         let menu = document.querySelector('#menu');
         let navbar = document.querySelector('.navbar');
 
         menu.onclick = () => {
             menu.classList.toggle('fa-times');
             navbar.classList.toggle('active');
-        }
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {

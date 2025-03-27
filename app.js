@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const app = express();
 
-// Increase payload size limit (e.g., 50MB)
+// Increase payload size limit to handle image uploads (e.g., 50MB)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -23,7 +23,7 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: { secure: false } // Set to true if using HTTPS
 }));
 
 // Authentication middleware
@@ -59,14 +59,22 @@ const isExpert = (req, res, next) => {
     res.status(403).send('Access denied: Expert privileges required');
 };
 
-// Initialize database
+// Initialize database with tables and default data
 async function initializeDatabase() {
     return new Promise((resolve, reject) => {
         db.serialize(() => {
+            // Drop existing tables (for testing purposes; remove in production)
             db.run('DROP TABLE IF EXISTS users', (err) => {
                 if (err) console.error('Error dropping users table:', err);
             });
+            db.run('DROP TABLE IF EXISTS products', (err) => {
+                if (err) console.error('Error dropping products table:', err);
+            });
+            db.run('DROP TABLE IF EXISTS tickets', (err) => {
+                if (err) console.error('Error dropping tickets table:', err);
+            });
 
+            // Create users table
             db.run(`CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE,
@@ -78,6 +86,7 @@ async function initializeDatabase() {
             )`, (err) => {
                 if (err) return reject(err);
 
+                // Insert default users (all original users preserved)
                 const defaultUsers = [
                     ['admin', 'admin123', 'Admin', null, 'admin@example.com', '1234567890'],
                     ['seller1', 'seller123', 'Seller', null, 'seller1@example.com', '2345678901'],
@@ -99,9 +108,13 @@ async function initializeDatabase() {
                         [username, password, role, expertise, email, mobile], (err) => {
                             if (err) console.error('Error inserting user:', err);
                             completed++;
+                            if (completed === defaultUsers.length) {
+                                console.log('Default users inserted');
+                            }
                         });
                 });
 
+                // Create products table (no default products here)
                 db.run(`CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
@@ -115,7 +128,8 @@ async function initializeDatabase() {
                     FOREIGN KEY (seller_id) REFERENCES users(id)
                 )`, (err) => {
                     if (err) return reject(err);
-                    
+
+                    // Create tickets table
                     db.run(`CREATE TABLE IF NOT EXISTS tickets (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         requester TEXT,
@@ -128,28 +142,7 @@ async function initializeDatabase() {
                         FOREIGN KEY (expert_id) REFERENCES users(id)
                     )`, (err) => {
                         if (err) return reject(err);
-                        
-                        const checkUsersInserted = () => {
-                            if (completed >= defaultUsers.length) {
-                                db.get(`SELECT name FROM pragma_table_info('products') WHERE name = 'quantity'`, (err, row) => {
-                                    if (err) {
-                                        console.error("Error checking for quantity column:", err);
-                                        return resolve();
-                                    }
-                                    if (!row) {
-                                        db.run("ALTER TABLE products ADD COLUMN quantity INTEGER DEFAULT 0", (err) => {
-                                            if (err) console.error("Couldn't add quantity column:", err);
-                                            resolve();
-                                        });
-                                    } else {
-                                        resolve();
-                                    }
-                                });
-                            } else {
-                                setTimeout(checkUsersInserted, 100);
-                            }
-                        };
-                        checkUsersInserted();
+                        resolve();
                     });
                 });
             });
@@ -157,11 +150,10 @@ async function initializeDatabase() {
     });
 }
 
-// Registration route (New)
+// Registration route
 app.post('/register', (req, res) => {
     const { username, password, role, email, mobile } = req.body;
 
-    // Strong validations
     const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -218,6 +210,40 @@ app.post('/register', (req, res) => {
     );
 });
 
+// Login route
+app.post('/login', (req, res) => {
+    const { username, password, role } = req.body;
+
+    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
+        if (err) {
+            console.error('Login database error:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        if (!user) return res.status(401).render('login', { error: 'Invalid username or password' });
+        if (user.role.toLowerCase() !== role.toLowerCase()) {
+            return res.status(401).render('login', { error: 'Role mismatch' });
+        }
+
+        req.session.user = user;
+        console.log(`User logged in: ${username}, Role: ${role}, ID: ${user.id}`);
+
+        switch (user.role) {
+            case 'Expert':
+                return res.redirect('/expert-dashboard');
+            case 'Seller':
+                return res.redirect('/seller');
+            case 'Buyer':
+                return res.redirect('/');
+            case 'Admin':
+                return res.redirect('/admindashboard');
+            case 'Delivery Manager':
+                return res.redirect('/deliverymanager');
+            default:
+                return res.redirect('/');
+        }
+    });
+});
+
 // Product routes
 app.post('/addproduct', isAuthenticated, isSeller, (req, res) => {
     const { name, price, quantity, image, description } = req.body;
@@ -255,7 +281,7 @@ app.post('/addproduct', isAuthenticated, isSeller, (req, res) => {
                 product: {
                     id: this.lastID,
                     name,
-                    price: `$${priceFloat.toFixed(2)}`,
+                    price: priceFloat,
                     image,
                     quantity: quantityInt,
                     sold: 0,
@@ -318,40 +344,6 @@ app.delete('/api/products/:id', isAuthenticated, isSeller, (req, res) => {
             res.json({ message: 'Product deleted successfully' });
         }
     );
-});
-
-// Login route
-app.post('/login', (req, res) => {
-    const { username, password, role } = req.body;
-
-    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
-        if (err) {
-            console.error('Login database error:', err);
-            return res.status(500).json({ message: 'Server error' });
-        }
-        if (!user) return res.status(401).render('login', { error: 'Invalid username or password' });
-        if (user.role.toLowerCase() !== role.toLowerCase()) {
-            return res.status(401).render('login', { error: 'Role mismatch' });
-        }
-
-        req.session.user = user;
-        console.log(`User logged in: ${username}, Role: ${role}, ID: ${user.id}`);
-
-        switch (user.role) {
-            case 'Expert':
-                return res.redirect('/expert-dashboard');
-            case 'Seller':
-                return res.redirect('/seller');
-            case 'Buyer':
-                return res.redirect('/');
-            case 'Admin':
-                return res.redirect('/admindashboard');
-            case 'Delivery Manager':
-                return res.redirect('/deliverymanager');
-            default:
-                return res.redirect('/');
-        }
-    });
 });
 
 // Ticket routes
@@ -422,20 +414,21 @@ app.get('/', (req, res) => {
             console.error('Error fetching products:', err);
             return res.status(500).render('homepage', { 
                 user: req.session.user || null,
-                newProducts: [],
+                newProducts: [], // Fallback to empty if error
                 bestProducts: []
             });
         }
-        
+
         const formattedNewProducts = products.map((product) => ({
             id: product.id,
             name: product.name,
             image: product.image,
-            rating: 4.5,
+            rating: 4.5, // Static rating for simplicity
             price: product.price,
             originalPrice: product.price * 1.45,
             description: product.description,
-            inStock: product.quantity > 0
+            inStock: product.quantity > 0,
+            available: product.quantity
         }));
 
         const bestProducts = [
@@ -447,7 +440,7 @@ app.get('/', (req, res) => {
 
         res.render('homepage', { 
             user: req.session.user || null,
-            newProducts: formattedNewProducts,
+            newProducts: formattedNewProducts.length > 0 ? formattedNewProducts : [], // Use DB products if available
             bestProducts: bestProducts
         });
     });
@@ -474,7 +467,7 @@ app.get('/seller', isAuthenticated, isSeller, (req, res) => {
         const initialProducts = products.map(p => ({
             id: p.id,
             name: p.name,
-            price: `$${p.price}`,
+            price: `$${p.price.toFixed(2)}`,
             image: p.image,
             quantity: p.quantity,
             sold: p.sold,
@@ -495,7 +488,7 @@ app.get('/api/recent-sales', isAuthenticated, isSeller, (req, res) => {
             res.json(products.map(p => ({
                 id: p.id,
                 name: p.name,
-                price: `$${p.price}`,
+                price: `$${p.price.toFixed(2)}`,
                 image: p.image,
                 quantity: p.quantity,
                 sold: p.sold,
@@ -557,6 +550,11 @@ app.get('/logout', (req, res) => {
         }
         res.redirect('/login');
     });
+});
+
+// Authentication check route (for client-side validation)
+app.get('/api/check-auth', (req, res) => {
+    res.json({ isAuthenticated: !!req.session.user });
 });
 
 // Error handling middleware
