@@ -19,29 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let products = [];
     let currentCartCount = parseInt(cartCount.textContent) || 0;
 
-    // Sample data for top sales (static examples)
-    const sampleProducts = [
-        { 
-            id: "t1",
-            name: "Organic Fertilizer", 
-            price: "$15", 
-            image: "/public/images/sell-us/t1.jpg", 
-            quantity: "10", 
-            sold: "6", 
-            type: "top", 
-            description: "Organic fertilizer made from natural ingredients." 
-        },
-        { 
-            id: "t2",
-            name: "Indoor Plant", 
-            price: "$30", 
-            image: "/public/images/sell-us/t2.jpg", 
-            quantity: "7", 
-            sold: "8", 
-            type: "top", 
-            description: "Beautiful indoor plant for your home." 
+    // Function to fetch top sales from server
+    async function fetchTopSales() {
+        try {
+            const response = await fetch('/api/top-sales');
+            if (!response.ok) throw new Error('Failed to fetch top sales');
+            return await response.json();
+        } catch (error) {
+            console.error('Error loading top sales:', error);
+            return [];
         }
-    ];
+    }
 
     // Function to fetch recent sales from server
     async function fetchRecentSales() {
@@ -183,30 +171,33 @@ document.addEventListener("DOMContentLoaded", () => {
         topSales.innerHTML = "";
         recentSales.innerHTML = "";
 
-        // Fetch initial products from server-rendered data
-        const response = await fetch('/seller');
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const scriptTag = doc.querySelector('script[data-initial-products]');
+        // Get initial products from the script tag
+        const scriptTag = document.querySelector('script[data-initial-products]');
         if (scriptTag) {
-            products = JSON.parse(scriptTag.textContent);
+            try {
+                products = JSON.parse(scriptTag.textContent);
+            } catch (error) {
+                console.error('Error parsing initial products:', error);
+                products = [];
+            }
         } else {
             products = [];
         }
 
+        // Render all products
         products.forEach(product => {
             const productCard = createProductCard(product);
             productList.appendChild(productCard);
         });
 
-        sampleProducts.forEach(product => {
-            if (product.type === "top") {
-                const productCard = createProductCard(product);
-                topSales.appendChild(productCard);
-            }
+        // Fetch and render top sales
+        const topProducts = await fetchTopSales();
+        topProducts.forEach(product => {
+            const productCard = createProductCard(product);
+            topSales.appendChild(productCard);
         });
 
+        // Fetch and render recent sales
         const recentProducts = await fetchRecentSales();
         recentProducts.forEach(product => {
             const productCard = createProductCard(product);
@@ -248,33 +239,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const imageFile = document.getElementById("seller-product-image").files[0];
 
             if (!name || !priceInput || !quantityInput || !imageFile) {
-                throw new Error('Please fill all fields and select an image');
+                alert('Please fill in all fields');
+                return;
             }
 
             const price = parseFloat(priceInput);
-            if (isNaN(price) || price <= 0) {
-                throw new Error('Price must be a positive number');
-            }
-
             const quantity = parseInt(quantityInput);
-            if (isNaN(quantity) || quantity <= 0) {
-                throw new Error('Quantity must be a positive number');
+
+            if (isNaN(price) || price <= 0 || isNaN(quantity) || quantity <= 0) {
+                alert('Please enter valid price and quantity');
+                return;
             }
 
-            let compressedImage;
-            try {
-                compressedImage = await compressImage(imageFile);
-                if (!compressedImage) {
-                    throw new Error('Failed to process image');
-                }
-            } catch (err) {
-                console.error('Image compression error:', err);
-                throw new Error('Failed to process image. Please try another image.');
-            }
+            const compressedImage = await compressImage(imageFile);
 
             const response = await fetch('/addproduct', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     name,
                     price,
@@ -283,41 +266,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            const rawResponse = await response.text();
-            console.log('Raw server response:', rawResponse);
-
             if (!response.ok) {
-                let errorData;
-                try {
-                    errorData = JSON.parse(rawResponse);
-                } catch {
-                    throw new Error('Server returned an unexpected response: ' + rawResponse);
-                }
-                throw new Error(errorData.message || 'Server error');
+                throw new Error('Failed to add product');
             }
 
-            const result = JSON.parse(rawResponse);
-            products.push({
-                ...result.product,
-                price: `$${price.toFixed(2)}`,
-                quantity: quantity.toString()
-            });
+            const result = await response.json();
+            console.log('Product added:', result);
 
-            await renderProducts();
+            // Clear form
             productForm.reset();
-            alert('Product added successfully!');
 
+            // Refresh product list
+            await renderProducts();
         } catch (error) {
-            console.error('Submission error:', error);
-            alert(error.message || 'An unexpected error occurred');
+            console.error('Error adding product:', error);
+            alert('Failed to add product. Please try again.');
         }
     });
 
-    // Event Listeners
+    // Close modal when clicking close button or overlay
     closeBtn.addEventListener("click", closeModal);
     overlay.addEventListener("click", closeModal);
+
+    // Add to cart button click handler
     addToCartBtn.addEventListener("click", addToCart);
-    buyNowBtn.addEventListener("click", addToCart);
 
     // Initial render
     renderProducts();
