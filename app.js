@@ -125,26 +125,33 @@ async function initializeDatabase() {
                     seller_id INTEGER,
                     quantity INTEGER DEFAULT 0,
                     sold INTEGER DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    sold_at TIMESTAMP,
                     FOREIGN KEY (seller_id) REFERENCES users(id)
                 )`, (err) => {
                     if (err) return reject(err);
 
                     // Insert default products (8 initial products)
                     const defaultProducts = [
-                        ['Money Plant Golden', 'A beautiful low-maintenance plant that brings prosperity.', 10.00, 'Plants', './public/images/new-products/p6.jpg', 2, 20, 0],
-                        ['Growing round Plastic pot', 'Durable plastic pot perfect for small plants.', 10.00, 'Pots', './public/images/new-products/p7.jpg', 2, 15, 0],
-                        ['Spinach Seeds', 'High-quality seeds for growing fresh spinach.', 5.00, 'Seeds', './public/images/new-products/p5.jpg', 2, 50, 0],
-                        ['Pruning Secateur', 'Sharp tool for precise plant pruning.', 10.00, 'Tools', './public/images/new-products/p1.jpg', 2, 0, 0],
-                        ['Onex Pebbles - 1Kg', 'Decorative pebbles for garden aesthetics.', 10.00, 'Pebbles', './public/images/new-products/p3.jpg', 2, 30, 0],
-                        ['Parijat Tree', 'Fragrant flowering tree for your garden.', 10.00, 'Plants', './public/images/new-products/p4.jpg', 2, 10, 0],
-                        ['Fungo Gaurd - 500ml', 'Fungicide to protect plants from fungal diseases.', 10.00, 'Fertilizers', './public/images/new-products/p2.jpg', 2, 25, 0],
-                        ['Coco Husk Block - 5kg', 'Natural growing medium for healthy plants.', 10.00, 'Fertilizers', './public/images/new-products/p8.jpg', 2, 12, 0]
+                        ['Money Plant Golden', 'A beautiful low-maintenance plant that brings prosperity.', 10.00, 'Plants', './public/images/new-products/p6.jpg', 2, 20, 15],
+                        ['Growing round Plastic pot', 'Durable plastic pot perfect for small plants.', 10.00, 'Pots', './public/images/new-products/p7.jpg', 2, 15, 12],
+                        ['Spinach Seeds', 'High-quality seeds for growing fresh spinach.', 5.00, 'Seeds', './public/images/new-products/p5.jpg', 2, 50, 30],
+                        ['Pruning Secateur', 'Sharp tool for precise plant pruning.', 10.00, 'Tools', './public/images/new-products/p1.jpg', 2, 0, 8],
+                        ['Onex Pebbles - 1Kg', 'Decorative pebbles for garden aesthetics.', 10.00, 'Pebbles', './public/images/new-products/p3.jpg', 2, 30, 25],
+                        ['Parijat Tree', 'Fragrant flowering tree for your garden.', 10.00, 'Plants', './public/images/new-products/p4.jpg', 2, 10, 5],
+                        ['Fungo Gaurd - 500ml', 'Fungicide to protect plants from fungal diseases.', 10.00, 'Fertilizers', './public/images/new-products/p2.jpg', 2, 25, 20],
+                        ['Coco Husk Block - 5kg', 'Natural growing medium for healthy plants.', 10.00, 'Fertilizers', './public/images/new-products/p8.jpg', 2, 12, 10]
                     ];
 
                     let completedProducts = 0;
                     defaultProducts.forEach(([name, description, price, category, image, seller_id, quantity, sold]) => {
-                        db.run('INSERT OR IGNORE INTO products (name, description, price, category, image, seller_id, quantity, sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                            [name, description, price, category, image, seller_id, quantity, sold], (err) => {
+                        // Generate a random number of days (0-30) for the sold_at date
+                        const randomDays = Math.floor(Math.random() * 30);
+                        const soldAtDate = new Date();
+                        soldAtDate.setDate(soldAtDate.getDate() - randomDays);
+                        
+                        db.run('INSERT OR IGNORE INTO products (name, description, price, category, image, seller_id, quantity, sold, sold_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                            [name, description, price, category, image, seller_id, quantity, sold, soldAtDate.toISOString()], (err) => {
                                 if (err) console.error('Error inserting product:', err);
                                 completedProducts++;
                                 if (completedProducts === defaultProducts.length) {
@@ -506,6 +513,32 @@ app.put('/api/tickets/:id', isAuthenticated, isAdmin, (req, res) => {
     });
 });
 
+// API to fetch top sales for a seller
+app.get('/api/top-sales', isAuthenticated, isSeller, (req, res) => {
+    const sellerId = req.session.user.id;
+    db.all(`
+        SELECT * FROM products 
+        WHERE seller_id = ? AND sold > 0 
+        ORDER BY sold DESC 
+        LIMIT 5
+    `, [sellerId], (err, products) => {
+        if (err) {
+            console.error('Error fetching top sales:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        res.json(products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: `$${p.price.toFixed(2)}`,
+            image: p.image,
+            quantity: p.quantity,
+            sold: p.sold,
+            description: p.description,
+            type: 'top'
+        })));
+    });
+});
+
 // General routes
 app.get('/', (req, res) => {
     db.all('SELECT * FROM products ORDER BY id DESC', [], (err, products) => {
@@ -615,10 +648,98 @@ app.get('/admindashboard', isAuthenticated, isAdmin, (req, res) => {
     res.render('admindashboard', { user: req.session.user || null });
 });
 
-app.get('/sellerdashboard', isAuthenticated, (req, res) => {
-    db.all('SELECT * FROM products WHERE seller_id = ?', [req.session.user.id], (err, products) => {
-        if (err) return res.status(500).json({ message: 'Server error' });
-        res.render('sellerdashboard', { products, user: req.session.user || null });
+// Seller Dashboard route
+app.get('/sellerdashboard', isSeller, (req, res) => {
+    const sellerId = req.session.user.id;
+    
+    // Get seller's products
+    db.all('SELECT * FROM products WHERE seller_id = ?', [sellerId], (err, products) => {
+        if (err) {
+            console.error('Error fetching products:', err);
+            return res.status(500).send('Error loading dashboard');
+        }
+
+        // Calculate dashboard metrics
+        const totalRevenue = products.reduce((sum, product) => sum + (product.price * product.sold), 0);
+        const totalProducts = products.length;
+        const totalSales = products.reduce((sum, product) => sum + product.sold, 0);
+        const activeProducts = products.filter(product => product.quantity > 0).length;
+
+        // Get top sales data
+        const topSales = products
+            .filter(product => product.sold > 0)
+            .sort((a, b) => b.sold - a.sold)
+            .slice(0, 5)
+            .map(product => ({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                quantity: product.quantity,
+                sold: product.sold,
+                description: product.description,
+                type: 'recent'
+            }));
+
+        // Get sales data for charts
+        db.all(`
+            WITH RECURSIVE months AS (
+                SELECT date('now', '-11 months') as month
+                UNION ALL
+                SELECT date(month, '+1 month')
+                FROM months
+                WHERE month < date('now')
+            ),
+            monthly_revenue AS (
+                SELECT 
+                    strftime('%Y-%m', COALESCE(sold_at, CURRENT_TIMESTAMP)) as month,
+                    SUM(price * sold) as revenue
+                FROM products 
+                WHERE seller_id = ? AND sold > 0
+                GROUP BY month
+            )
+            SELECT 
+                m.month,
+                COALESCE(mr.revenue, 0) as revenue
+            FROM months m
+            LEFT JOIN monthly_revenue mr ON m.month = mr.month
+            ORDER BY m.month ASC
+        `, [sellerId], (err, revenueData) => {
+            if (err) {
+                console.error('Error fetching revenue data:', err);
+                return res.status(500).send('Error loading dashboard');
+            }
+
+            // Get category-wise sales data
+            db.all(`
+                SELECT 
+                    category,
+                    SUM(price * sold) as revenue,
+                    COUNT(*) as count
+                FROM products 
+                WHERE seller_id = ? AND sold > 0
+                GROUP BY category
+            `, [sellerId], (err, categoryData) => {
+                if (err) {
+                    console.error('Error fetching category data:', err);
+                    return res.status(500).send('Error loading dashboard');
+                }
+
+                res.render('sellerdashboard', {
+                    user: req.session.user,
+                    products,
+                    metrics: {
+                        totalRevenue,
+                        totalProducts,
+                        totalSales,
+                        activeProducts
+                    },
+                    revenueData,
+                    categoryData,
+                    topSales: topSales.length > 0 ? topSales : [] // Pass top sales data to the template
+                });
+            });
+        });
     });
 });
 
