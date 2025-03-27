@@ -13,7 +13,7 @@
 <body>
     <%- include('partials/header', { user: user }) %>
 
-    <!-- Home -->
+    <!-- Home Slider -->
     <section class="home" id="home">
         <div class="swiper home-slider">
             <div class="swiper-wrapper">
@@ -48,32 +48,26 @@
     <!-- Category Badges -->
     <section class="category-badges">
         <div class="category-container">
-            <!-- Plants -->
             <a href="/plants" class="category-item">
                 <img src="../public/images/category-badges/plants-badge.png" alt="Plants">
                 <p>PLANTS</p>
             </a>
-            <!-- Seeds -->
             <a href="/seeds" class="category-item">
                 <img src="../public/images/category-badges/seeds-badge.png" alt="Seeds">
                 <p>SEEDS</p>
             </a>
-            <!-- Pots -->
             <a href="/pots" class="category-item">
                 <img src="../public/images/category-badges/pots-badge.png" alt="Pots">
                 <p>POTS</p>
             </a>
-            <!-- Fertilizers -->
             <a href="/fertilizers" class="category-item">
                 <img src="../public/images/category-badges/fertilizers-badge.png" alt="Fertilizers">
                 <p>FERTILIZERS</p>
             </a>
-            <!-- Pebbles -->
             <a href="/pebbles" class="category-item">
                 <img src="../public/images/category-badges/pebbles-badge.png" alt="Pebbles">
                 <p>PEBBLES</p>
             </a>
-            <!-- Accessories -->
             <a href="/tools" class="category-item">
                 <img src="../public/images/category-badges/accessories-badge.png" alt="Accessories">
                 <p>ACCESSORIES</p>
@@ -81,20 +75,66 @@
         </div>
     </section>
 
-    <!-- Product -->
+    <!-- New Products -->
     <section class="product" id="available">
         <h1 class="heading">New Products</h1>
         <div class="box-container">
-            <!-- Products will be dynamically inserted here by JavaScript -->
+            <% newProducts.forEach(product => { %>
+                <div class="box" data-product-id="<%= product.id %>">
+                    <div class="icons">
+                        <a href="#" class="fas fa-heart"></a>
+                        <a href="#" class="fas fa-share"></a>
+                        <a href="#" class="fas fa-eye"></a>
+                    </div>
+                    <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                    <h3><%= product.name %></h3>
+                    <div class="stars">
+                        <% for (let i = 0; i < Math.floor(product.rating); i++) { %>
+                            <i class="fas fa-star"></i>
+                        <% } %>
+                        <% if (product.rating % 1 !== 0) { %>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                        <% } %>
+                        <% for (let i = Math.ceil(product.rating); i < 5; i++) { %>
+                            <i class="far fa-star"></i>
+                        <% } %>
+                    </div>
+                    <div class="quantity">
+                        <span>Quantity</span>
+                        <input type="number" min="1" max="<%= product.available %>" value="1">
+                    </div>
+                    <div class="price">
+                        $<%= product.price.toFixed(2) %> <span>$<%= product.originalPrice.toFixed(2) %></span>
+                    </div>
+                    <div class="available">
+                        <span>Available: <%= product.available %></span>
+                    </div>
+                    <a href="#" class="btn add-to-cart-btn"><%= product.inStock ? 'Add to Cart' : 'Out of Stock' %></a>
+                </div>
+            <% }) %>
         </div>
     </section>
 
-    <!-- Our Best Products -->
+    <!-- Best Products -->
     <section class="sell" id="best">
         <h1 class="heading">Our Best Product</h1>
         <div class="line"></div>
         <div class="box-container">
-            <!-- Best products will be dynamically inserted here by JavaScript -->
+            <% bestProducts.forEach(product => { %>
+                <div class="box" data-product-id="<%= product.id %>">
+                    <div class="image">
+                        <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy">
+                    </div>
+                    <div class="content">
+                        <h3><%= product.name %></h3>
+                        <div class="icons">
+                            <i class="fas fa-shopping-cart"></i>
+                            <i class="fas fa-heart"></i>
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
         </div>
     </section>
 
@@ -109,125 +149,9 @@
         </div>
     </div>
 
-    <!-- jQuery & Swiper JS -->
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-    <script>
-        // Product data
-        window.newProducts = [
-            {
-                id: 1,
-                name: "Money Plant Golden",
-                image: "./public/images/new-products/p6.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "A beautiful low-maintenance plant that brings prosperity.",
-                inStock: true,
-                available: 25
-            },
-            {
-                id: 2,
-                name: "Growing round Plastic pot",
-                image: "./public/images/new-products/p7.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Durable plastic pot perfect for small plants.",
-                inStock: true,
-                available: 50
-            },
-            {
-                id: 3,
-                name: "Spinach Seeds",
-                image: "./public/images/new-products/p5.jpg",
-                rating: 4.5,
-                price: 5,
-                originalPrice: 7.60,
-                description: "High-quality seeds for growing fresh spinach.",
-                inStock: true,
-                available: 100
-            },
-            {
-                id: 4,
-                name: "Pruning Secateur",
-                image: "./public/images/new-products/p1.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Sharp tool for precise plant pruning.",
-                inStock: false,
-                available: 0
-            },
-            {
-                id: 5,
-                name: "Onex Pebbles - 1Kg",
-                image: "./public/images/new-products/p3.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Decorative pebbles for garden aesthetics.",
-                inStock: true,
-                available: 30
-            },
-            {
-                id: 6,
-                name: "Parijat Tree",
-                image: "./public/images/new-products/p4.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Fragrant flowering tree for your garden.",
-                inStock: true,
-                available: 15
-            },
-            {
-                id: 7,
-                name: "Fungo Gaurd - 500ml",
-                image: "./public/images/new-products/p2.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Fungicide to protect plants from fungal diseases.",
-                inStock: true,
-                available: 40
-            },
-            {
-                id: 8,
-                name: "Coco Husk Block - 5kg",
-                image: "./public/images/new-products/p8.jpg",
-                rating: 4.5,
-                price: 10,
-                originalPrice: 14.50,
-                description: "Natural growing medium for healthy plants.",
-                inStock: true,
-                available: 20
-            }
-        ];
-
-        window.bestProducts = [
-            {
-                id: 1,
-                name: "Bonsai",
-                image: "public/images/best-products/s1.jpg"
-            },
-            {
-                id: 2,
-                name: "Indoor",
-                image: "public/images/best-products/s2.jpg"
-            },
-            {
-                id: 3,
-                name: "Areca Palm",
-                image: "public/images/best-products/s3.jpg"
-            },
-            {
-                id: 4,
-                name: "Seeds",
-                image: "public/images/best-products/s4.jpg"
-            }
-        ];
-    </script>
     <script src="../public/scripts/homescript.js" defer></script>
     <script src="../public/scripts/searchhandler.js" defer></script>
 </body>

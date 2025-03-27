@@ -183,6 +183,18 @@ document.addEventListener("DOMContentLoaded", () => {
         topSales.innerHTML = "";
         recentSales.innerHTML = "";
 
+        // Fetch initial products from server-rendered data
+        const response = await fetch('/seller');
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const scriptTag = doc.querySelector('script[data-initial-products]');
+        if (scriptTag) {
+            products = JSON.parse(scriptTag.textContent);
+        } else {
+            products = [];
+        }
+
         products.forEach(product => {
             const productCard = createProductCard(product);
             productList.appendChild(productCard);

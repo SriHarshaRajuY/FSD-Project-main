@@ -1,4 +1,23 @@
-// Product data
+// Home Slider
+var swiper = new Swiper(".home-slider", {
+    spaceBetween: 30,
+    centeredSlides: true,
+    autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+    },
+    pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+    },
+    navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+    },
+    loop: true,
+});
+
+// Default New Products with 'available' key added
 window.newProducts = [
     {
         id: 1,
@@ -9,7 +28,7 @@ window.newProducts = [
         originalPrice: 14.50,
         description: "A beautiful low-maintenance plant that brings prosperity.",
         inStock: true,
-        available: 25
+        available: 20
     },
     {
         id: 2,
@@ -20,7 +39,7 @@ window.newProducts = [
         originalPrice: 14.50,
         description: "Durable plastic pot perfect for small plants.",
         inStock: true,
-        available: 50
+        available: 15
     },
     {
         id: 3,
@@ -31,7 +50,7 @@ window.newProducts = [
         originalPrice: 7.60,
         description: "High-quality seeds for growing fresh spinach.",
         inStock: true,
-        available: 100
+        available: 50
     },
     {
         id: 4,
@@ -64,7 +83,7 @@ window.newProducts = [
         originalPrice: 14.50,
         description: "Fragrant flowering tree for your garden.",
         inStock: true,
-        available: 15
+        available: 10
     },
     {
         id: 7,
@@ -75,7 +94,7 @@ window.newProducts = [
         originalPrice: 14.50,
         description: "Fungicide to protect plants from fungal diseases.",
         inStock: true,
-        available: 40
+        available: 25
     },
     {
         id: 8,
@@ -86,51 +105,9 @@ window.newProducts = [
         originalPrice: 14.50,
         description: "Natural growing medium for healthy plants.",
         inStock: true,
-        available: 20
+        available: 12
     }
 ];
-
-window.bestProducts = [
-    {
-        id: 1,
-        name: "Bonsai",
-        image: "public/images/best-products/s1.jpg"
-    },
-    {
-        id: 2,
-        name: "Indoor",
-        image: "public/images/best-products/s2.jpg"
-    },
-    {
-        id: 3,
-        name: "Areca Palm",
-        image: "public/images/best-products/s3.jpg"
-    },
-    {
-        id: 4,
-        name: "Seeds",
-        image: "public/images/best-products/s4.jpg"
-    }
-];
-
-//* Home Slider */
-var swiper = new Swiper(".home-slider", {
-    spaceBetween: 30,
-    centeredSlides: true,
-    autoplay: {
-        delay: 5000,
-        disableOnInteraction: false,
-    },
-    pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-    },
-    navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-    },
-    loop: true,
-});
 
 // Function to create star rating HTML
 function createStarRating(rating) {
@@ -191,69 +168,24 @@ async function isLoggedIn() {
     }
 }
 
-// Render new products
-function renderNewProducts() {
-    const newProductsContainer = document.querySelector('.product .box-container');
-    if (newProductsContainer && window.newProducts) {
-        newProductsContainer.innerHTML = window.newProducts.map(product => `
-            <div class="box" data-product-id="${product.id}">
-                <div class="icons">
-                    <a href="#" class="fas fa-heart"></a>
-                    <a href="#" class="fas fa-share"></a>
-                    <a href="#" class="fas fa-eye"></a>
-                </div>
-                <img src="${product.image}" alt="${product.name}" loading="lazy">
-                <h3>${product.name}</h3>
-                <div class="stars">
-                    ${createStarRating(product.rating || 4.5)}
-                </div>
-                <div class="quantity">
-                    <span>Quantity</span>
-                    <input type="number" min="1" max="${product.available}" value="1">
-                </div>
-                <div class="price">
-                    $${product.price.toFixed(2)} <span>$${product.originalPrice ? product.originalPrice.toFixed(2) : (product.price * 1.45).toFixed(2)}</span>
-                </div>
-                <div class="available">
-                    <span>Available: ${product.available}</span>
-                </div>
-                <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
-            </div>
-        `).join('');
-    }
-}
-
-// Render best products
-function renderBestProducts() {
-    const bestProductsContainer = document.querySelector('.sell .box-container');
-    if (bestProductsContainer && window.bestProducts) {
-        bestProductsContainer.innerHTML = window.bestProducts.map(product => `
-            <div class="box" data-product-id="${product.id}">
-                <div class="image">
-                    <img src="${product.image}" alt="${product.name}" loading="lazy">
-                </div>
-                <div class="content">
-                    <h3>${product.name}</h3>
-                    <div class="icons">
-                        <i class="fas fa-shopping-cart"></i>
-                        <i class="fas fa-heart"></i>
-                        <i class="fas fa-eye"></i>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
 // Show product detail
 function showProductDetail(productId) {
-    const product = window.newProducts.find(p => p.id == productId) || 
-                   window.bestProducts.find(p => p.id == productId);
-    
-    if (!product) {
+    const productElement = document.querySelector(`.product .box[data-product-id="${productId}"]`);
+    if (!productElement) {
         console.error('Product not found:', productId);
         return;
     }
+
+    const product = {
+        id: productId,
+        name: productElement.querySelector('h3').textContent,
+        image: productElement.querySelector('img').src,
+        rating: 4.5,
+        price: parseFloat(productElement.querySelector('.price').textContent.split(' ')[0].replace('$', '')),
+        description: productElement.dataset.description || 'No description available.',
+        inStock: productElement.querySelector('.add-to-cart-btn').textContent === 'Add to Cart',
+        available: parseInt(productElement.querySelector('.available span').textContent.split(': ')[1])
+    };
 
     const productDetail = document.getElementById('product-detail');
     const detailContent = productDetail.querySelector('.detail-content');
@@ -265,13 +197,11 @@ function showProductDetail(productId) {
         <div>
             <h1>${product.name}</h1>
             <div class="rating">
-                ${createStarRatingSVG(product.rating || 4.5)}
+                ${createStarRatingSVG(product.rating)}
             </div>
             <p class="price">$${product.price.toFixed(2)}</p>
-            <p class="description">${product.description || 'No description available.'}</p>
-            ${product.available !== undefined ? `
-                <p class="available">Available: ${product.available}</p>
-            ` : ''}
+            <p class="description">${product.description}</p>
+            <p class="available">Available: ${product.available}</p>
             <button class="add-to-cart-btn" ${!product.inStock ? 'disabled' : ''}>
                 ${product.inStock ? 'Add to Cart' : 'Sold Out'}
             </button>
@@ -352,13 +282,22 @@ async function handleAddToCart(productId, quantity) {
         return;
     }
 
-    const product = window.newProducts.find(p => p.id == productId) || 
-                   window.bestProducts.find(p => p.id == productId);
-    
-    if (!product) {
+    const productElement = document.querySelector(`.box[data-product-id="${productId}"]`);
+    if (!productElement) {
         console.error('Product not found for cart:', productId);
         return;
     }
+
+    const product = {
+        id: productId,
+        name: productElement.querySelector('h3').textContent,
+        price: parseFloat(productElement.querySelector('.price').textContent.split(' ')[0].replace('$', '')),
+        image: productElement.querySelector('img').src,
+        rating: 4.5,
+        description: productElement.dataset.description || 'No description available.',
+        inStock: productElement.querySelector('.add-to-cart-btn').textContent === 'Add to Cart',
+        available: parseInt(productElement.querySelector('.available span').textContent.split(': ')[1])
+    };
 
     if (!product.inStock) {
         alert('This product is out of stock');
@@ -375,7 +314,7 @@ async function handleAddToCart(productId, quantity) {
         name: product.name,
         price: product.price,
         image: product.image,
-        rating: product.rating || 4.5,
+        rating: product.rating,
         description: product.description,
         inStock: product.inStock,
         available: product.available,
@@ -411,10 +350,51 @@ async function handleAddToCart(productId, quantity) {
     alert(`${product.name} has been added to your cart!`);
 }
 
+// Function to update new products list (maintain 8 items)
+function updateNewProducts(newProduct) {
+    // If newProduct is provided (from seller), add it and remove the oldest
+    if (newProduct) {
+        window.newProducts.unshift(newProduct); // Add to the beginning
+        if (window.newProducts.length > 8) {
+            window.newProducts.pop(); // Remove the oldest (last item)
+        }
+    }
+}
+
 // Initialize products and add event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    renderNewProducts();
-    renderBestProducts();
+    // If no products are rendered from server, use window.newProducts
+    const newProductsSection = document.querySelector('.product .box-container');
+    if (newProductsSection.children.length === 0) {
+        window.newProducts.forEach(product => {
+            const productHTML = `
+                <div class="box" data-product-id="${product.id}">
+                    <div class="icons">
+                        <a href="#" class="fas fa-heart"></a>
+                        <a href="#" class="fas fa-share"></a>
+                        <a href="#" class="fas fa-eye"></a>
+                    </div>
+                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    <h3>${product.name}</h3>
+                    <div class="stars">
+                        ${createStarRating(product.rating)}
+                    </div>
+                    <div class="quantity">
+                        <span>Quantity</span>
+                        <input type="number" min="1" max="${product.available}" value="1">
+                    </div>
+                    <div class="price">
+                        $${product.price.toFixed(2)} <span>$${product.originalPrice.toFixed(2)}</span>
+                    </div>
+                    <div class="available">
+                        <span>Available: ${product.available}</span>
+                    </div>
+                    <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
+                </div>
+            `;
+            newProductsSection.insertAdjacentHTML('beforeend', productHTML);
+        });
+    }
 
     document.querySelectorAll('.box').forEach(box => {
         const quantityInput = box.querySelector('input[type="number"]');
@@ -472,5 +452,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === productDetail) {
             productDetail.classList.remove('active');
         }
+    });
+
+    // Listen for new product additions (simulated via seller.js communication)
+    window.addEventListener('newProductAdded', (e) => {
+        const newProduct = e.detail;
+        updateNewProducts(newProduct);
+        // Re-render the new products section
+        const newProductsSection = document.querySelector('.product .box-container');
+        newProductsSection.innerHTML = '';
+        window.newProducts.forEach(product => {
+            const productHTML = `
+                <div class="box" data-product-id="${product.id}">
+                    <div class="icons">
+                        <a href="#" class="fas fa-heart"></a>
+                        <a href="#" class="fas fa-share"></a>
+                        <a href="#" class="fas fa-eye"></a>
+                    </div>
+                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    <h3>${product.name}</h3>
+                    <div class="stars">
+                        ${createStarRating(product.rating)}
+                    </div>
+                    <div class="quantity">
+                        <span>Quantity</span>
+                        <input type="number" min="1" max="${product.available}" value="1">
+                    </div>
+                    <div class="price">
+                        $${product.price.toFixed(2)} <span>$${product.originalPrice.toFixed(2)}</span>
+                    </div>
+                    <div class="available">
+                        <span>Available: ${product.available}</span>
+                    </div>
+                    <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
+                </div>
+            `;
+            newProductsSection.insertAdjacentHTML('beforeend', productHTML);
+        });
+        // Re-attach event listeners
+        document.querySelectorAll('.box').forEach(box => {
+            const addToCartBtn = box.querySelector('.add-to-cart-btn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const productId = box.getAttribute('data-product-id');
+                    const quantity = parseInt(box.querySelector('input[type="number"]')?.value || '1');
+                    await handleAddToCart(productId, quantity);
+                });
+            }
+        });
     });
 });
