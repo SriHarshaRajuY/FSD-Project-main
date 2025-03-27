@@ -17,98 +17,6 @@ var swiper = new Swiper(".home-slider", {
     loop: true,
 });
 
-// Default New Products with 'available' key added
-window.newProducts = [
-    {
-        id: 1,
-        name: "Money Plant Golden",
-        image: "./public/images/new-products/p6.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "A beautiful low-maintenance plant that brings prosperity.",
-        inStock: true,
-        available: 20
-    },
-    {
-        id: 2,
-        name: "Growing round Plastic pot",
-        image: "./public/images/new-products/p7.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Durable plastic pot perfect for small plants.",
-        inStock: true,
-        available: 15
-    },
-    {
-        id: 3,
-        name: "Spinach Seeds",
-        image: "./public/images/new-products/p5.jpg",
-        rating: 4.5,
-        price: 5,
-        originalPrice: 7.60,
-        description: "High-quality seeds for growing fresh spinach.",
-        inStock: true,
-        available: 50
-    },
-    {
-        id: 4,
-        name: "Pruning Secateur",
-        image: "./public/images/new-products/p1.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Sharp tool for precise plant pruning.",
-        inStock: false,
-        available: 0
-    },
-    {
-        id: 5,
-        name: "Onex Pebbles - 1Kg",
-        image: "./public/images/new-products/p3.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Decorative pebbles for garden aesthetics.",
-        inStock: true,
-        available: 30
-    },
-    {
-        id: 6,
-        name: "Parijat Tree",
-        image: "./public/images/new-products/p4.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Fragrant flowering tree for your garden.",
-        inStock: true,
-        available: 10
-    },
-    {
-        id: 7,
-        name: "Fungo Gaurd - 500ml",
-        image: "./public/images/new-products/p2.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Fungicide to protect plants from fungal diseases.",
-        inStock: true,
-        available: 25
-    },
-    {
-        id: 8,
-        name: "Coco Husk Block - 5kg",
-        image: "./public/images/new-products/p8.jpg",
-        rating: 4.5,
-        price: 10,
-        originalPrice: 14.50,
-        description: "Natural growing medium for healthy plants.",
-        inStock: true,
-        available: 12
-    }
-];
-
 // Function to create star rating HTML
 function createStarRating(rating) {
     const fullStars = Math.floor(rating);
@@ -350,52 +258,8 @@ async function handleAddToCart(productId, quantity) {
     alert(`${product.name} has been added to your cart!`);
 }
 
-// Function to update new products list (maintain 8 items)
-function updateNewProducts(newProduct) {
-    // If newProduct is provided (from seller), add it and remove the oldest
-    if (newProduct) {
-        window.newProducts.unshift(newProduct); // Add to the beginning
-        if (window.newProducts.length > 8) {
-            window.newProducts.pop(); // Remove the oldest (last item)
-        }
-    }
-}
-
 // Initialize products and add event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // If no products are rendered from server, use window.newProducts
-    const newProductsSection = document.querySelector('.product .box-container');
-    if (newProductsSection.children.length === 0) {
-        window.newProducts.forEach(product => {
-            const productHTML = `
-                <div class="box" data-product-id="${product.id}">
-                    <div class="icons">
-                        <a href="#" class="fas fa-heart"></a>
-                        <a href="#" class="fas fa-share"></a>
-                        <a href="#" class="fas fa-eye"></a>
-                    </div>
-                    <img src="${product.image}" alt="${product.name}" loading="lazy">
-                    <h3>${product.name}</h3>
-                    <div class="stars">
-                        ${createStarRating(product.rating)}
-                    </div>
-                    <div class="quantity">
-                        <span>Quantity</span>
-                        <input type="number" min="1" max="${product.available}" value="1">
-                    </div>
-                    <div class="price">
-                        $${product.price.toFixed(2)} <span>$${product.originalPrice.toFixed(2)}</span>
-                    </div>
-                    <div class="available">
-                        <span>Available: ${product.available}</span>
-                    </div>
-                    <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
-                </div>
-            `;
-            newProductsSection.insertAdjacentHTML('beforeend', productHTML);
-        });
-    }
-
     document.querySelectorAll('.box').forEach(box => {
         const quantityInput = box.querySelector('input[type="number"]');
         if (quantityInput) {
@@ -452,54 +316,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === productDetail) {
             productDetail.classList.remove('active');
         }
-    });
-
-    // Listen for new product additions (simulated via seller.js communication)
-    window.addEventListener('newProductAdded', (e) => {
-        const newProduct = e.detail;
-        updateNewProducts(newProduct);
-        // Re-render the new products section
-        const newProductsSection = document.querySelector('.product .box-container');
-        newProductsSection.innerHTML = '';
-        window.newProducts.forEach(product => {
-            const productHTML = `
-                <div class="box" data-product-id="${product.id}">
-                    <div class="icons">
-                        <a href="#" class="fas fa-heart"></a>
-                        <a href="#" class="fas fa-share"></a>
-                        <a href="#" class="fas fa-eye"></a>
-                    </div>
-                    <img src="${product.image}" alt="${product.name}" loading="lazy">
-                    <h3>${product.name}</h3>
-                    <div class="stars">
-                        ${createStarRating(product.rating)}
-                    </div>
-                    <div class="quantity">
-                        <span>Quantity</span>
-                        <input type="number" min="1" max="${product.available}" value="1">
-                    </div>
-                    <div class="price">
-                        $${product.price.toFixed(2)} <span>$${product.originalPrice.toFixed(2)}</span>
-                    </div>
-                    <div class="available">
-                        <span>Available: ${product.available}</span>
-                    </div>
-                    <a href="#" class="btn add-to-cart-btn">${product.inStock ? 'Add to Cart' : 'Out of Stock'}</a>
-                </div>
-            `;
-            newProductsSection.insertAdjacentHTML('beforeend', productHTML);
-        });
-        // Re-attach event listeners
-        document.querySelectorAll('.box').forEach(box => {
-            const addToCartBtn = box.querySelector('.add-to-cart-btn');
-            if (addToCartBtn) {
-                addToCartBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const productId = box.getAttribute('data-product-id');
-                    const quantity = parseInt(box.querySelector('input[type="number"]')?.value || '1');
-                    await handleAddToCart(productId, quantity);
-                });
-            }
-        });
     });
 });

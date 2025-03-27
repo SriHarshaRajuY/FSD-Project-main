@@ -3,340 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../public/styles/admindashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Gardenly - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/styles/admindashboard.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Mobile Header -->
-        <header class="mobile-header">
-            <button id="mobile-menu-toggle" class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="logo">Admin Panel</div>
-            <button id="theme-toggle" class="theme-toggle">
-                <i class="fas fa-moon"></i>
-                <i class="fas fa-sun"></i>
-            </button>
-        </header>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo"><i class="fa-solid fa-leaf"></i> Gardenly Admin</a>
+        <nav class="navbar">
+            <a href="#overview" class="active">Overview</a>
+            <a href="#users">Users</a>
+            <a href="#products">Products</a>
+            <a href="#tickets">Tickets</a>
+            <a href="/logout">Logout</a>
+        </nav>
+        <div id="menu" class="fas fa-bars"></div>
+    </header>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">Admin Panel</div>
-                <button id="sidebar-close" class="sidebar-close">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Main Content -->
+    <main class="admin-container">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <h1 class="heading">Admin Dashboard Overview</h1>
+            <div class="line"></div>
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Total Users</h3>
+                    <p id="total-users">Loading...</p>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-seedling"></i>
+                    <h3>Total Products</h3>
+                    <p id="total-products">Loading...</p>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>Open Tickets</h3>
+                    <p id="open-tickets">Loading...</p>
+                </div>
+                <!-- <div class="metric-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Total Revenue</h3>
+                    <p id="total-revenue">Loading...</p>
+                </div> -->
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active" data-page="dashboard">
-                        <a href="#dashboard"><i class="fas fa-home"></i> Dashboard</a>
-                    </li>
-                    <li data-page="users">
-                        <a href="#users"><i class="fas fa-users"></i> Users</a>
-                    </li>
-                    <li data-page="analytics">
-                        <a href="#analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
-                    </li>
-                    <li data-page="settings">
-                        <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
-                    </li>
-                    <li data-page="logs">
-                        <a href="#logs"><i class="fas fa-clipboard-list"></i> Logs</a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="section">
+            <h1 class="heading">Manage Users</h1>
+            <div class="line"></div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                </table>
             </div>
-        </aside>
+        </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Page -->
-            <section id="dashboard-page" class="page active">
-                <div class="page-header">
-                    <h1>Admin Dashboard</h1>
-                </div>
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <h1 class="heading">Manage Products</h1>
+            <div class="line"></div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Seller</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body"></tbody>
+                </table>
+            </div>
+        </section>
 
-                <!-- Metric Cards -->
-                <div class="metric-cards">
-                    <div class="card metric-card">
-                        <div class="card-content">
-                            <div class="metric-header">
-                                <h3>Total Users</h3>
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="metric-value">1,234</div>
-                            <div class="metric-change positive">+5% from last month</div>
-                        </div>
-                    </div>
-                    <div class="card metric-card">
-                        <div class="card-content">
-                            <div class="metric-header">
-                                <h3>Active Sessions</h3>
-                                <i class="fas fa-signal"></i>
-                            </div>
-                            <div class="metric-value">256</div>
-                            <div class="metric-change negative">-2% from yesterday</div>
-                        </div>
-                    </div>
-                    <div class="card metric-card">
-                        <div class="card-content">
-                            <div class="metric-header">
-                                <h3>System Uptime</h3>
-                                <i class="fas fa-server"></i>
-                            </div>
-                            <div class="metric-value">99.9%</div>
-                            <div class="metric-change">Stable</div>
-                        </div>
-                    </div>
-                    <div class="card metric-card">
-                        <div class="card-content">
-                            <div class="metric-header">
-                                <h3>Pending Tasks</h3>
-                                <i class="fas fa-tasks"></i>
-                            </div>
-                            <div class="metric-value">12</div>
-                            <div class="metric-change positive">-3 from yesterday</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Tickets Section -->
+        <section id="tickets" class="section">
+            <h1 class="heading">Manage Tickets</h1>
+            <div class="line"></div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Requester</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Expert</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tickets-table-body"></tbody>
+                </table>
+            </div>
+        </section>
 
-                <!-- Charts -->
-                <div class="dashboard-grid">
-                    <div class="card chart-card">
-                        <div class="card-header">
-                            <h2>User Growth</h2>
-                        </div>
-                        <div class="card-content">
-                            <canvas id="user-growth-chart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card chart-card">
-                        <div class="card-header">
-                            <h2>System Performance</h2>
-                        </div>
-                        <div class="card-content">
-                            <canvas id="performance-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
+        <!-- Orders Section (Placeholder) -->
+        <section id="orders" class="section">
+            <h1 class="heading">Manage Orders</h1>
+            <div class="line"></div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-                <!-- Recent Activity -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Recent Activity</h2>
-                        <a href="#logs" class="view-all">View All</a>
-                    </div>
-                    <div class="card-content">
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>User</th>
-                                        <th>Action</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2023-10-15 10:30</td>
-                                        <td>Sri Harsha</td>
-                                        <td>Logged out</td>
-                                        <td>From IP: 192.166.1.1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2023-10-15 10:30</td>
-                                        <td>Pardhuva</td>
-                                        <td>Logged In</td>
-                                        <td>From IP: 192.168.1.1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2023-10-15 09:45</td>
-                                        <td>Abhyas</td>
-                                        <td>Updated Profile</td>
-                                        <td>Changed email address</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2023-10-14 18:20</td>
-                                        <td>sai teja</td>
-                                        <td>System Update</td>
-                                        <td>Applied security patch</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2023-10-14 12:10</td>
-                                        <td>satish</td>
-                                        <td>Created Account</td>
-                                        <td>New user registered</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Users Page -->
-            <section id="users-page" class="page">
-                <div class="page-header">
-                    <h1>User Management</h1>
-                    <div class="header-actions">
-                        <div class="search-container">
-                            <input type="text" placeholder="Search users..." class="search-input">
-                            <button class="search-btn"><i class="fas fa-search"></i></button>
-                        </div>
-                        <button id="add-user-btn" class="btn primary-btn">
-                            <i class="fas fa-plus-circle"></i> Add User
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2>All Users</h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="table-container">
-                            <table id="users-table" class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>User ID</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#USR-001</td>
-                                        <td>abhyas</td>
-                                        <td>abhyas@gmail.com</td>
-                                        <td>Admin</td>
-                                        <td><span class="status active">Active</span></td>
-                                        <td>
-                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#USR-002</td>
-                                        <td>sai teja</td>
-                                        <td>sai teja@gmail.com</td>
-                                        <td>User</td>
-                                        <td><span class="status inactive">Inactive</span></td>
-                                        <td>
-                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                        </td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Analytics Page -->
-            <section id="analytics-page" class="page">
-                <div class="page-header">
-                    <h1>System Analytics</h1>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Usage Statistics</h2>
-                    </div>
-                    <div class="card-content">
-                        <canvas id="usage-chart"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Settings Page -->
-            <section id="settings-page" class="page">
-                <div class="page-header">
-                    <h1>System Settings</h1>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>General Settings</h2>
-                    </div>
-                    <div class="card-content">
-                        <form id="settings-form">
-                            <div class="form-group">
-                                <label for="system-name">System Name</label>
-                                <input type="text" id="system-name" value="Admin Panel">
-                            </div>
-                            <div class="form-group">
-                                <label for="timezone">Timezone</label>
-                                <select id="timezone">
-                                    <option value="UTC">UTC</option>
-                                    <option value="EST">EST</option>
-                                    <option value="PST">PST</option>
-                                </select>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn primary-btn">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Logs Page -->
-            <section id="logs-page" class="page">
-                <div class="page-header">
-                    <h1>System Logs</h1>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Activity Logs</h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>User</th>
-                                        <th>Action</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2023-10-15 10:30</td>
-                                        <td>Admin</td>
-                                        <td>Logged In</td>
-                                        <td>From IP: 192.168.1.1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2023-10-14 18:20</td>
-                                        <td>System</td>
-                                        <td>Update Applied</td>
-                                        <td>Security patch v1.2.3</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Overlay -->
-    <div id="overlay" class="overlay"></div>
-
-    <script src="../public/scripts/admindashboard.js"></script>
+    <!-- JavaScript -->
+    <script src="/public/scripts/admindashboard.js"></script>
 </body>
 </html>
