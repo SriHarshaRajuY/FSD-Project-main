@@ -86,7 +86,7 @@ async function initializeDatabase() {
             )`, (err) => {
                 if (err) return reject(err);
 
-                // Insert default users (all original users preserved)
+                // Insert default users
                 const defaultUsers = [
                     ['admin', 'admin123', 'Admin', null, 'admin@example.com', '1234567890'],
                     ['seller1', 'seller123', 'Seller', null, 'seller1@example.com', '2345678901'],
@@ -102,19 +102,19 @@ async function initializeDatabase() {
                     ['expert3', 'expert789', 'Expert', 'Billing', 'expert3@example.com', '2345098761']
                 ];
 
-                let completed = 0;
+                let completedUsers = 0;
                 defaultUsers.forEach(([username, password, role, expertise, email, mobile]) => {
                     db.run('INSERT OR IGNORE INTO users (username, password, role, expertise, email, mobile) VALUES (?, ?, ?, ?, ?, ?)',
                         [username, password, role, expertise, email, mobile], (err) => {
                             if (err) console.error('Error inserting user:', err);
-                            completed++;
-                            if (completed === defaultUsers.length) {
+                            completedUsers++;
+                            if (completedUsers === defaultUsers.length) {
                                 console.log('Default users inserted');
                             }
                         });
                 });
 
-                // Create products table (no default products here)
+                // Create products table
                 db.run(`CREATE TABLE IF NOT EXISTS products (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
@@ -128,6 +128,30 @@ async function initializeDatabase() {
                     FOREIGN KEY (seller_id) REFERENCES users(id)
                 )`, (err) => {
                     if (err) return reject(err);
+
+                    // Insert default products (8 initial products)
+                    const defaultProducts = [
+                        ['Money Plant Golden', 'A beautiful low-maintenance plant that brings prosperity.', 10.00, 'Plants', './public/images/new-products/p6.jpg', 2, 20, 0],
+                        ['Growing round Plastic pot', 'Durable plastic pot perfect for small plants.', 10.00, 'Pots', './public/images/new-products/p7.jpg', 2, 15, 0],
+                        ['Spinach Seeds', 'High-quality seeds for growing fresh spinach.', 5.00, 'Seeds', './public/images/new-products/p5.jpg', 2, 50, 0],
+                        ['Pruning Secateur', 'Sharp tool for precise plant pruning.', 10.00, 'Tools', './public/images/new-products/p1.jpg', 2, 0, 0],
+                        ['Onex Pebbles - 1Kg', 'Decorative pebbles for garden aesthetics.', 10.00, 'Pebbles', './public/images/new-products/p3.jpg', 2, 30, 0],
+                        ['Parijat Tree', 'Fragrant flowering tree for your garden.', 10.00, 'Plants', './public/images/new-products/p4.jpg', 2, 10, 0],
+                        ['Fungo Gaurd - 500ml', 'Fungicide to protect plants from fungal diseases.', 10.00, 'Fertilizers', './public/images/new-products/p2.jpg', 2, 25, 0],
+                        ['Coco Husk Block - 5kg', 'Natural growing medium for healthy plants.', 10.00, 'Fertilizers', './public/images/new-products/p8.jpg', 2, 12, 0]
+                    ];
+
+                    let completedProducts = 0;
+                    defaultProducts.forEach(([name, description, price, category, image, seller_id, quantity, sold]) => {
+                        db.run('INSERT OR IGNORE INTO products (name, description, price, category, image, seller_id, quantity, sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                            [name, description, price, category, image, seller_id, quantity, sold], (err) => {
+                                if (err) console.error('Error inserting product:', err);
+                                completedProducts++;
+                                if (completedProducts === defaultProducts.length) {
+                                    console.log('Default products inserted');
+                                }
+                            });
+                    });
 
                     // Create tickets table
                     db.run(`CREATE TABLE IF NOT EXISTS tickets (
@@ -407,23 +431,101 @@ app.get('/api/tickets', isAuthenticated, isExpert, (req, res) => {
     });
 });
 
+// NEW ADMIN API ROUTES
+// API to fetch all users
+app.get('/api/users', isAuthenticated, isAdmin, (req, res) => {
+    db.all('SELECT id, username, role, email, mobile FROM users', [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching users:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        res.json(rows);
+    });
+});
+
+// API to update user role
+app.put('/api/users/:id', isAuthenticated, isAdmin, (req, res) => {
+    const { role } = req.body;
+    const userId = req.params.id;
+    db.run('UPDATE users SET role = ? WHERE id = ?', [role, userId], function(err) {
+        if (err) {
+            console.error('Error updating user:', err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (this.changes === 0) return res.status(404).json({ message: 'User not found' });
+        res.json({ message: 'User updated successfully' });
+    });
+});
+
+// API to delete user
+app.delete('/api/users/:id', isAuthenticated, isAdmin, (req, res) => {
+    const userId = req.params.id;
+    db.run('DELETE FROM users WHERE id = ?', [userId], function(err) {
+        if (err) {
+            console.error('Error deleting user:', err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (this.changes === 0) return res.status(404).json({ message: 'User not found' });
+        res.json({ message: 'User deleted successfully' });
+    });
+});
+
+// API to fetch all products
+app.get('/api/products', isAuthenticated, isAdmin, (req, res) => {
+    db.all('SELECT id, name, price, quantity, seller_id FROM products', [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching products:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        res.json(rows);
+    });
+});
+
+// API to fetch all tickets (for admin)
+app.get('/api/tickets/all', isAuthenticated, isAdmin, (req, res) => {
+    db.all('SELECT * FROM tickets', [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching tickets:', err);
+            return res.status(500).json({ message: 'Server error' });
+        }
+        res.json(rows);
+    });
+});
+
+// API to update ticket status
+app.put('/api/tickets/:id', isAuthenticated, isAdmin, (req, res) => {
+    const { status } = req.body;
+    const ticketId = req.params.id;
+    db.run('UPDATE tickets SET status = ? WHERE id = ?', [status, ticketId], function(err) {
+        if (err) {
+            console.error('Error updating ticket:', err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (this.changes === 0) return res.status(404).json({ message: 'Ticket not found' });
+        res.json({ message: 'Ticket updated successfully' });
+    });
+});
+
 // General routes
 app.get('/', (req, res) => {
-    db.all('SELECT * FROM products ORDER BY id DESC LIMIT 8', [], (err, products) => {
+    db.all('SELECT * FROM products ORDER BY id DESC', [], (err, products) => {
         if (err) {
             console.error('Error fetching products:', err);
             return res.status(500).render('homepage', { 
                 user: req.session.user || null,
-                newProducts: [], // Fallback to empty if error
+                newProducts: [],
                 bestProducts: []
             });
         }
 
-        const formattedNewProducts = products.map((product) => ({
+        // Limit to 8 most recent products using slice
+        const recentProducts = products.slice(0, 8);
+        
+        const formattedNewProducts = recentProducts.map((product) => ({
             id: product.id,
             name: product.name,
             image: product.image,
-            rating: 4.5, // Static rating for simplicity
+            rating: 4.5,
             price: product.price,
             originalPrice: product.price * 1.45,
             description: product.description,
@@ -440,7 +542,7 @@ app.get('/', (req, res) => {
 
         res.render('homepage', { 
             user: req.session.user || null,
-            newProducts: formattedNewProducts.length > 0 ? formattedNewProducts : [], // Use DB products if available
+            newProducts: formattedNewProducts.length > 0 ? formattedNewProducts : [],
             bestProducts: bestProducts
         });
     });
