@@ -71,10 +71,14 @@
         </div>
     
         <h2 class="seller-section-title">🔥 Top Sales</h2>
-        <div id="seller-top-sales" class="seller-product-grid"></div>
+        <div id="seller-top-sales" class="seller-product-grid">
+            <!-- Top sales will be dynamically loaded here -->
+        </div>
     
         <h2 class="seller-section-title">📦 Recent Sales</h2>
-        <div id="seller-recent-sales" class="seller-product-grid"></div>
+        <div id="seller-recent-sales" class="seller-product-grid">
+            <!-- Recent sales will be dynamically loaded here -->
+        </div>
     </div>
 
     <!-- Product Details Modal -->
@@ -96,6 +100,11 @@
 
     <!-- Overlay for modal background -->
     <div id="seller-overlay" class="seller-overlay"></div>
+
+    <!-- Pass initial products data to JavaScript -->
+    <script type="application/json" data-initial-products>
+        <%- JSON.stringify(initialProducts) %>
+    </script>
 
     <!-- JavaScript -->
     <script src="/public/scripts/seller.js"></script>
